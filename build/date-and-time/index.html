@@ -25,6 +25,26 @@
     <script type="text/javascript" src="index.js"></script>
     <!-- NOTE: make calendar no more than 310px wide - and center that 310box vertical / horizontal -->
 
+    <div class="ui active dimmer">
+        <div class="contain-date-time">
+            <div class="snuggle-date-time">
+                <div class="calendar">
+                    <div class="calendar-row year">
+                        <button class="ctl-ym left" type="button" tabindex="1" aria-pressed="false" aria-label="decrease year" onclick="datePicker.controlYear(event, '<')">
+                                    <i class="angle double left icon"></i>
+                                  </button>
+
+                        <input id="sui-input-year" class="ipt-ym" type="number" placeholder="year" value="" tabindex="2" aria-label="year" min="100"
+                            onkeyup="datePicker.directKeyUpYear(event)" onblur="datePicker.directBlurYear(event)">
+
+                        <button class="ctl-ym right" type="button" tabindex="3" aria-pressed="false" aria-label="increase year" onclick="datePicker.controlYear(event, '>')">
+                                    <i class="angle double right icon"></i>
+                                  </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 </body>
 
 </html>
