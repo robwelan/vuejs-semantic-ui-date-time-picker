@@ -1,9 +1,9 @@
 /* normalising things */
 
-div.calendar input[type="button" i],
-div.calendar input[type="submit" i],
-div.calendar input[type="reset" i],
-div.calendar input[type="file" i]::-webkit-file-upload-button,
+div.calendar input[type="button"],
+div.calendar input[type="submit"],
+div.calendar input[type="reset"],
+div.calendar input[type="file"]::-webkit-file-upload-button,
 div.calendar button {
   border: 0;
   padding: 0;
@@ -26,15 +26,25 @@ div.calendar button:focus {
 
 .contain-date-time,
 .contain-date-time div {
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 
 .contain-date-time {
   height: 100%;
   width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   padding: 0;
   margin: 0;
@@ -45,6 +55,7 @@ div.calendar button:focus {
   max-width: 310px;
   border: 1px solid white;
   border-radius: 5px;
+  -webkit-box-shadow: 0 10px 6px -6px #7F7E7E;
   box-shadow: 0 10px 6px -6px #7F7E7E;
   background: white;
 }
@@ -54,7 +65,12 @@ div.calendar button:focus {
 }
 
 .calendar-row {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-flow: row;
   flex-flow: row;
   width: 100%;
   padding-left: 2px;
@@ -65,21 +81,28 @@ div.calendar button:focus {
   padding-top: 2px;
 }
 
+.calendar-row.month {
+  margin-top: -1px;
+  padding-bottom: 2px;
+}
+
 
 /* calendar control heights */
 
 .ctl-ym,
-.ipt-ym {
-  min-height: 30px;
-  height: 30px;
+.ipt-ym,
+.day-label {
+  min-height: 44px;
+  height: 44px;
 }
 
 
 /* calendar control widths */
 
-.ctl-ym {
-  min-width: 30px;
-  width: 30px;
+.ctl-ym,
+.day-label {
+  min-width: 44px;
+  width: 44px;
 }
 
 .ctl-ym {
@@ -112,6 +135,19 @@ div.calendar button:focus {
 .ipt-ym {
   width: 100%;
   text-align: center;
-  border: 1px solid #6F90A2;
+  border: 1px solid;
   background: #fff;
+}
+
+.day-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.ctl-ym.left,
+.ctl-ym.right,
+.ipt-ym {
+  border-color: #A2A0A0;
 }
