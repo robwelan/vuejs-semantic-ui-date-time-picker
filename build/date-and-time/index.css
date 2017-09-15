@@ -1,17 +1,17 @@
 /* normalising things */
 
-div.calendar input[type="button"],
-div.calendar input[type="submit"],
-div.calendar input[type="reset"],
-div.calendar input[type="file"]::-webkit-file-upload-button,
+div.calendar input[type='button'],
+div.calendar input[type='submit'],
+div.calendar input[type='reset'],
+div.calendar input[type='file']::-webkit-file-upload-button,
 div.calendar button {
   border: 0;
   padding: 0;
   margin: 0;
 }
 
-div.calendar input[type=number]::-webkit-inner-spin-button,
-div.calendar input[type=number]::-webkit-outer-spin-button {
+div.calendar input[type='number']::-webkit-inner-spin-button,
+div.calendar input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
@@ -21,11 +21,11 @@ div.calendar button:focus {
   outline: none;
 }
 
-
 /* normalising things */
 
 .contain-date-time,
-.contain-date-time div {
+.contain-date-time div,
+.contain-date-time button {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
@@ -55,8 +55,8 @@ div.calendar button:focus {
   max-width: 310px;
   border: 1px solid white;
   border-radius: 5px;
-  -webkit-box-shadow: 0 10px 6px -6px #7F7E7E;
-  box-shadow: 0 10px 6px -6px #7F7E7E;
+  -webkit-box-shadow: 0 10px 6px -6px #7f7e7e;
+  box-shadow: 0 10px 6px -6px #7f7e7e;
   background: white;
 }
 
@@ -73,44 +73,56 @@ div.calendar button:focus {
   -ms-flex-flow: row;
   flex-flow: row;
   width: 100%;
-  padding-left: 2px;
-  padding-right: 2px;
+  padding-left: 7px;
+  padding-right: 7px;
 }
 
 .calendar-row.year {
-  padding-top: 2px;
+  padding-top: 7px;
 }
 
 .calendar-row.month {
   margin-top: -1px;
-  padding-bottom: 2px;
+  padding-bottom: 7px;
 }
-
 
 /* calendar control heights */
 
+.ctl-today,
 .ctl-ym,
 .ipt-ym,
-.day-label {
-  min-height: 44px;
-  height: 44px;
+.day-label,
+.ctl-day {
+  min-height: 42px;
+  height: 42px;
 }
-
 
 /* calendar control widths */
-
-.ctl-ym,
-.day-label {
-  min-width: 44px;
-  width: 44px;
+.ctl-today {
+  width: 100%;
 }
-
-.ctl-ym {
+.ctl-ym,
+.day-label,
+.ctl-day {
+  min-width: 42px;
+  width: 42px;
+}
+.ctl-today,
+.ctl-ym,
+.ctl-day {
   display: block;
   cursor: pointer;
   background: transparent;
 }
-
+.ctl-day.mute {
+  color: #797979;
+  /*  background-color: rgb(238, 235, 235); */
+}
+.ctl-today.special {
+  margin-top: 7px;
+  border: 1px solid;
+  border-radius: 3px;
+}
 .ctl-ym.left {
   border-top: 1px solid;
   border-left: 1px solid;
@@ -124,6 +136,19 @@ div.calendar button:focus {
   border-right: 1px solid;
   border-bottom: 1px solid;
   border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.ctl-day.tl {
+  border-top-left-radius: 3px;
+}
+.ctl-day.tr {
+  border-top-right-radius: 3px;
+}
+.ctl-day.bl {
+  border-bottom-left-radius: 3px;
+}
+.ctl-day.br {
   border-bottom-right-radius: 3px;
 }
 
@@ -146,8 +171,21 @@ div.calendar button:focus {
   font-weight: 600;
 }
 
+.ctl-today.special,
 .ctl-ym.left,
 .ctl-ym.right,
 .ipt-ym {
-  border-color: #A2A0A0;
+  border-color: #a2a0a0;
+}
+
+.ctl-ym:focus,
+.ctl-day:focus {
+  background: #dddada;
+}
+.ctl-ym:active,
+.ctl-ym.active,
+.ctl-day:active,
+.ctl-day.active {
+  background: #464646;
+  color: #fff;
 }

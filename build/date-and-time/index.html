@@ -28,32 +28,39 @@
         <div class="contain-date-time">
             <div class="snuggle-date-time">
                 <div class="calendar">
+                    <div class="calendar-row today">
+                        <button class="ctl-today special" type="button" tabindex="1" aria-label="today" onclick="pickDateTime.setToday()">
+                            Today
+                        </button>
+                    </div>
                     <div class="calendar-row year">
-                        <button class="ctl-ym left" type="button" tabindex="1" aria-pressed="false" aria-label="decrease year" onclick="pickDateTime.controlYear(event, '<')">
+                        <button class="ctl-ym left" type="button" tabindex="1" aria-label="decrease year" onclick="pickDateTime.controlYear(event, '<')">
                             <i class="angle double left icon"></i>
                         </button>
 
                         <input id="input-year" class="ipt-ym" type="number" placeholder="year" value="" tabindex="2" aria-label="year" min="100"
                             onkeyup="pickDateTime.directKeyUpYear(event)" onblur="pickDateTime.directBlurYear(event)">
 
-                        <button class="ctl-ym right" type="button" tabindex="3" aria-pressed="false" aria-label="increase year" onclick="pickDateTime.controlYear(event, '>')">
+                        <button class="ctl-ym right" type="button" tabindex="3" aria-label="increase year" onclick="pickDateTime.controlYear(event, '>')">
                             <i class="angle double right icon"></i>
                         </button>
                     </div>
                     <div class="calendar-row month">
-                        <button class="ctl-ym left" type="button" tabindex="4" aria-pressed="false" aria-label="decrease month" onclick="pickDateTime.controlMonth(event, '<')">
+                        <button class="ctl-ym left" type="button" tabindex="4" aria-label="decrease month" onclick="pickDateTime.controlMonth(event, '<')">
                             <i class="angle left icon"></i>
                         </button>
 
                         <input id="input-month" class="ipt-ym" type="number" placeholder="month" value="" tabindex="5" aria-label="month" min="0"
                             onkeyup="pickDateTime.directKeyUpMonth(event)" onblur="pickDateTime.directBlurMonth(event)">
 
-                        <button class="ctl-ym right" type="button" tabindex="6" aria-pressed="false" aria-label="increase month" onclick="pickDateTime.controlMonth(event, '>')">
+                        <button class="ctl-ym right" type="button" tabindex="6" aria-label="increase month" onclick="pickDateTime.controlMonth(event, '>')">
                             <i class="angle right icon"></i>
                         </button>
                     </div>
                     <div class="calendar-row day top" id="label-days"></div>
-                    <div class="calendar-row day" id="week-01"></div>
+                    <div id="calendar-days">
+
+                    </div>
                 </div>
             </div>
         </div>

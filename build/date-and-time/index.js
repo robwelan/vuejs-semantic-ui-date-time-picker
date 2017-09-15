@@ -33,6 +33,39 @@ oDateAndOrTime = (function () {
 
   var aDayCharacters = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+  function uiClickDay(e) {
+    var eTarget = e.target;
+    var nButtonYear = Number(eTarget.getAttribute('data-year'));
+    var nButtonMonth = Number(eTarget.getAttribute('data-month'));
+    var nButtonDay = Number(eTarget.getAttribute('data-day'));
+    var sButtonYearMonth = nButtonYear.toString() + nButtonMonth.toString();
+    var sYearMonth = nYear.toString() + nMonth.toString();
+    var bIsBigChange = false;
+    if (sButtonYearMonth !== sYearMonth) {
+      bIsBigChange = true;
+      nYear = nButtonYear;
+      nMonth = nButtonMonth;
+    }
+    nDayOfMonth = nButtonDay;
+    if (bIsBigChange === true) {
+      // re-write cal
+      changeControls(nYear, nMonth, nDayOfMonth);
+      writeDays(nYear, nMonth);
+    } else {
+      // change selected day
+      var buttons = document.getElementsByClassName('ctl-day');
+      var i = 0
+      var length = buttons.length;
+      for (i; i < length; i++) {
+        buttons[i].classList.remove("hasactive");
+        buttons[i].classList.remove("active");
+      };
+      eTarget.classList.add('active');
+    }
+
+
+  }
+
   function returnKeyStroke(e) {
     var code;
     if (!e) var e = window.event; // some browsers don't pass e, so get it from the window
@@ -41,17 +74,50 @@ oDateAndOrTime = (function () {
     } else if (e.which) {
       code = e.which; // others use e.which
     }
-
     return code;
   }
 
-  function listenForEnterOnCtls() {
-    var elements = window.document.getElementsByClassName('ctl-ym');
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].addEventListener('keypress', addClass, false);
-      elements[i].addEventListener('keyup', removeClass, false);
-    }
+  function listenForEnterOnInputs() {
+    eInputYear.addEventListener('keydown', function (e) {
+      var keyPress = returnKeyStroke(e);
+      if (keyPress == 13) {
+        nYear = Number(eInputYear.value);
+        fixMonthInput();
+        changeControls(nYear, nMonth, nDayOfMonth);
+        writeDays(nYear, nMonth);
+      }
+    })
+    eInputMonth.addEventListener('keydown', function (e) {
+      var keyPress = returnKeyStroke(e);
+      if (keyPress == 13) {
+        nMonth = Number(eInputMonth.value - 1);
+        fixMonthInput();
+        changeControls(nYear, nMonth, nDayOfMonth);
+        writeDays(nYear, nMonth);
+      }
+    })
   }
+
+  function listenForButtonClicksOnDays() {
+    //    http://localhost:8080/build/date-and-time/
+    var buttons = document.getElementsByClassName('ctl-day');
+    var i = 0
+    var length = buttons.length;
+    for (i; i < length; i++) {
+      if (document.addEventListener) {
+        buttons[i].addEventListener("click", uiClickDay);
+      } else {
+        buttons[i].attachEvent("onclick", uiClickDay);
+      };
+    };
+  }
+  // function listenForEnterOnCtls() {
+  //   var elements = window.document.getElementsByClassName('ctl-ym');
+  //   for (var i = 0; i < elements.length; i++) {
+  //     elements[i].addEventListener('keypress', addClass, false);
+  //     elements[i].addEventListener('keyup', removeClass, false);
+  //   }
+  // }
 
   function isValidDate(nY, nM, nD) {
     var d = new Date(nY, nM, nD);
@@ -142,6 +208,7 @@ oDateAndOrTime = (function () {
         changeControls(nYear, nMonth, nDayOfMonth);
       }
     }
+    writeDays(nYear, nMonth);
   }
 
   function fixMonthInput() {
@@ -245,7 +312,6 @@ oDateAndOrTime = (function () {
   function bindAllowedKeysYear() {
     eInputYear.onkeydown = function (e) {
       var keyCode = returnKeyStroke(e);
-      //  alert(keyCode)
       if (!(
           (keyCode > 95 && keyCode < 106) ||
           (keyCode > 47 && keyCode < 58) ||
@@ -326,6 +392,90 @@ oDateAndOrTime = (function () {
       }
     }
 
+    var s = '';
+    var b = '';
+    var sWN = '';
+    var sClassSide = '';
+    var sClassCal = '';
+    var sClassActive = '';
+    var sClassTL = '';
+    var sClassTR = '';
+    var sClassBL = '';
+    var sClassBR = '';
+    var sClasses = '';
+    var o = {};
+    var i = 0;
+
+    for (var x = 0; x < aWeek.length; x++) {
+      x < 10 ? sWN = '0' + x : sWN = x.toString();
+      s += '<div class="calendar-row day" id="week-' + sWN + '">'
+      for (var y = 0; y < aWeek[x].length; y++) {
+        o = aWeek[x][y];
+        b = '';
+        sClassSide = '';
+        sClassCal = '';
+        sClassActive = '';
+        sClassTL = '';
+        sClassTR = '';
+        sClassBL = '';
+        sClassBR = '';
+        sClasses = '';
+        if (y === 0) {
+          sClassSide = ' left';
+        }
+        if (y === 6) {
+          sClassSide = ' right';
+        }
+        if (o.month !== nMonth) {
+          sClassCal = ' mute';
+        }
+        if ((o.year === nYear) && (o.month === nMonth) && (o.day === nDayOfMonth)) {
+          sClassActive = ' active';
+        }
+        if (x === 0) {
+          if (y === 0) {
+            sClassTL = ' tl';
+          }
+          if (y === 6) {
+            sClassTR = ' tr';
+          }
+        }
+        if (x === aWeek.length - 1) {
+          if (y === 0) {
+            sClassBL = ' bl';
+          }
+          if (y === 6) {
+            sClassBR = ' br';
+          }
+        }
+        sClasses = sClassSide + sClassCal + sClassActive + sClassTL + sClassTR + sClassBL + sClassBR;
+        //        b += '<button class="ctl-day' + sClasses + '" type="button" tabindex="' + Number(i + 6).toString() + '" aria-pressed="false" aria-label="' + o.year + '-' + o.month + '-' + o.day + '" onclick="console.log(event, \'' + o.year.toString() + '-' + o.month.toString() + '-' + o.day.toString() + '\')">'
+        b += '<button class="ctl-day' + sClasses + '" type="button" tabindex="' + Number(i + 6).toString() + '" aria-label="' + o.year + '-' + (Number(o.month) + 1) + '-' + o.day + '" data-year="' + o.year + '" data-month="' + o.month + '"' + ' data-day="' + o.day + '">'
+        b += o.day.toString();
+        b += '</button>';
+        s += b;
+        i++;
+      }
+      s += '</div>';
+    }
+
+    var eCalDays = window.document.getElementById('calendar-days');
+    eCalDays.innerHTML = s;
+
+    //https://stackoverflow.com/questions/203198/event-binding-on-dynamically-created-elements
+
+    // this listen event must run after Days are written to UI.
+    listenForButtonClicksOnDays();
+  }
+
+  function setToday() {
+    // force set to today's date
+    dToday = new Date();
+    setDateNumbers(dToday);
+    changeMonth(nMonth);
+    changeYear(nYear);
+    changeDay(nDayOfMonth, nDayOfWeek);
+    writeDays(nYear, nMonth);
   }
 
   function init() {
@@ -333,13 +483,14 @@ oDateAndOrTime = (function () {
     eInputMonth = window.document.getElementById('input-month');
     bindAllowedKeysYear();
     bindAllowedKeysMonth();
+    listenForEnterOnInputs();
     setDateNumbers(dToday);
     changeMonth(nMonth);
     changeYear(nYear);
     changeDay(nDayOfMonth, nDayOfWeek);
     writeLabels();
     writeDays(nYear, nMonth);
-    console.log('Initialised: date-time-picker');
+    //  console.log('Initialised: date-time-picker');
   }
   return {
     init: init,
@@ -348,7 +499,8 @@ oDateAndOrTime = (function () {
     directKeyUpYear: directKeyUpYear,
     directBlurYear: directBlurYear,
     directKeyUpMonth: directKeyUpMonth,
-    directBlurMonth: directBlurMonth
+    directBlurMonth: directBlurMonth,
+    setToday: setToday
   };
 })();
 
