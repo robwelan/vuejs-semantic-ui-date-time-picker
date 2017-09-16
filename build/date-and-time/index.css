@@ -120,6 +120,7 @@ div.calendar button:focus {
 }
 .ctl-today.special {
   margin-top: 7px;
+  margin-bottom: 7px;
   border: 1px solid;
   border-radius: 3px;
 }
@@ -178,10 +179,13 @@ div.calendar button:focus {
   border-color: #a2a0a0;
 }
 
+.ctl-today:focus,
 .ctl-ym:focus,
 .ctl-day:focus {
   background: #dddada;
 }
+.ctl-today:active,
+.ctl-today.active,
 .ctl-ym:active,
 .ctl-ym.active,
 .ctl-day:active,

@@ -32,6 +32,20 @@ oDateAndOrTime = (function () {
   ];
 
   var aDayCharacters = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  var nLowestYearLimit = 1900;
+  var isInitialised = false;
+
+  function writeShortDate() {
+    var language = [window.navigator.userLanguage || window.navigator.language];
+    var date = new Date(),
+      options = {
+        //  weekday: "long",
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      };
+    console.log(date.toLocaleDateString(language, options));
+  }
 
   function uiClickDay(e) {
     var eTarget = e.target;
@@ -62,8 +76,6 @@ oDateAndOrTime = (function () {
       };
       eTarget.classList.add('active');
     }
-
-
   }
 
   function returnKeyStroke(e) {
@@ -99,25 +111,30 @@ oDateAndOrTime = (function () {
   }
 
   function listenForButtonClicksOnDays() {
-    //    http://localhost:8080/build/date-and-time/
-    var buttons = document.getElementsByClassName('ctl-day');
+    var buttons = window.document.getElementsByClassName('ctl-day');
     var i = 0
     var length = buttons.length;
     for (i; i < length; i++) {
-      if (document.addEventListener) {
+      if (window.document.addEventListener) {
         buttons[i].addEventListener("click", uiClickDay);
       } else {
         buttons[i].attachEvent("onclick", uiClickDay);
       };
     };
   }
-  // function listenForEnterOnCtls() {
-  //   var elements = window.document.getElementsByClassName('ctl-ym');
-  //   for (var i = 0; i < elements.length; i++) {
-  //     elements[i].addEventListener('keypress', addClass, false);
-  //     elements[i].addEventListener('keyup', removeClass, false);
-  //   }
-  // }
+
+  function ignoreForButtonClicksOnDays() {
+    var buttons = window.document.getElementsByClassName('ctl-day');
+    var i = 0
+    var length = buttons.length;
+    for (i; i < length; i++) {
+      if (window.document.removeEventListener) {
+        buttons[i].removeEventListener("click", uiClickDay);
+      } else {
+        buttons[i].detachEvent("onclick", uiClickDay);
+      };
+    };
+  }
 
   function isValidDate(nY, nM, nD) {
     var d = new Date(nY, nM, nD);
@@ -137,7 +154,7 @@ oDateAndOrTime = (function () {
 
   function isDifferentYear() {
     var nTemp = Number(eInputYear.value);
-    if (nTemp !== Number(nYear)) {
+    if ((nTemp !== Number(nYear)) || eInputYear.value === '') {
       return true;
     } else {
       return false;
@@ -146,7 +163,7 @@ oDateAndOrTime = (function () {
 
   function isDifferentMonth() {
     var nTemp = Number(eInputMonth.value);
-    if (nTemp !== Number(nMonth)) {
+    if ((nTemp !== Number(nMonth)) || eInputMonth.value === '') {
       return true;
     } else {
       return false;
@@ -154,19 +171,15 @@ oDateAndOrTime = (function () {
   }
 
   function changeYear(n) {
-    //   window.document.getElementById('sui-label-year').textContent = n;
     eInputYear.value = n;
   }
 
   function changeMonth(n) {
-    //   window.document.getElementById('sui-label-month').textContent =
     aMonthStrings[n];
     eInputMonth.value = aMonthNumbers[n];
   }
 
   function changeDay(nM, nW) {
-    //  window.document.getElementById('sui-label-daynumber').textContent = nM;
-    //  window.document.getElementById('sui-label-daystring').textContent =
     aDayStrings[nW];
   }
 
@@ -182,8 +195,8 @@ oDateAndOrTime = (function () {
     if (sField === 'y') {
       if (sCommand === '<') {
         nYear -= 1;
-        if (nYear < 100) {
-          nYear = 100;
+        if (nYear < nLowestYearLimit) {
+          nYear = nLowestYearLimit;
         }
         changeControls(nYear, nMonth, nDayOfMonth);
       }
@@ -211,20 +224,37 @@ oDateAndOrTime = (function () {
     writeDays(nYear, nMonth);
   }
 
+  function fixYearInput() {
+    var bNeedsFix = false;
+    var nTemp = Number(eInputYear.value);
+    if (nTemp < nLowestYearLimit) {
+      nYear = nLowestYearLimit;
+      bNeedsFix = true;
+    }
+    if (bNeedsFix === true) {
+      eInputYear.value = nYear;
+    }
+  }
+
   function fixMonthInput() {
     var bNeedsFix = false;
-    var nTemp = Number(eInputMonth.value);
+    var nTemp = Number(eInputMonth.value) - 1;
     if (nTemp > 12) {
+      //      eInputMonth.value = 11;
       nTemp = 11;
       bNeedsFix = true;
     }
     if (nTemp < 0) {
+      //      eInputMonth.value = 0;
       nTemp = 0;
       bNeedsFix = true;
     }
+    if (nTemp.toString() !== eInputMonth.value.toString()) {
+      bNeedsFix = true;
+    }
     if (bNeedsFix === true) {
-      nMonth = nTemp;
       eInputMonth.value = nTemp;
+      nMonth = nTemp;
     }
   }
 
@@ -233,8 +263,12 @@ oDateAndOrTime = (function () {
       return;
     }
     nYear = Number(eInputYear.value);
-    fixMonthInput();
+    if (nYear < nLowestYearLimit) {
+      nYear = nLowestYearLimit;
+    }
+    fixYearInput();
     changeControls(nYear, nMonth, nDayOfMonth);
+    writeDays(nYear, nMonth);
   }
 
   function directKeyUpYear(e) {
@@ -254,20 +288,22 @@ oDateAndOrTime = (function () {
     }
     if (bNeedsChanging === true) {
       nYear = Number(eInputYear.value);
-      if (nYear < 100) {
-        nYear = 100;
+      if (nYear < nLowestYearLimit) {
+        nYear = nLowestYearLimit;
       }
-      fixMonthInput();
+      fixYearInput();
       changeControls(nYear, nMonth, nDayOfMonth);
     }
+    writeDays(nYear, nMonth);
   }
 
   function directBlurMonth(e) {
     if (isDifferentMonth() === false) {
       return;
     }
-    nMonth = Number(eInputMonth.value) - 1;
+    fixMonthInput();
     changeControls(nYear, nMonth, nDayOfMonth);
+    writeDays(nYear, nMonth);
   }
 
   function directKeyUpMonth(e) {
@@ -285,16 +321,15 @@ oDateAndOrTime = (function () {
         bNeedsChanging = true;
       }
     }
-
     if (bNeedsChanging === true) {
       nMonth = Number(eInputMonth.value) - 1;
       fixMonthInput();
       changeControls(nYear, nMonth, nDayOfMonth);
     }
+    writeDays(nYear, nMonth);
   }
 
   function changeControls(nY, nM, nD) {
-    //    console.log('y:' + nY + '; m:' + nM + '; d:' + nD);
     if (isValidDate(nY, nM, nD)) {
       dToday = new Date();
       nY = dToday.getFullYear();
@@ -322,7 +357,7 @@ oDateAndOrTime = (function () {
         )) {
         return false;
       }
-    };
+    }
   }
 
   function bindAllowedKeysMonth() {
@@ -338,7 +373,7 @@ oDateAndOrTime = (function () {
         )) {
         return false;
       }
-    };
+    }
   }
 
   function writeLabels() {
@@ -359,15 +394,17 @@ oDateAndOrTime = (function () {
   }
 
   function writeDays(nY, nM) {
+    if (isInitialised === true) {
+      // remove the button click listeners
+      ignoreForButtonClicksOnDays();
+    }
     var dFirstDayThisMonth = new Date(nY, nM, 1);
     var dFirstDayNextMonth = new Date(nY, nM + 1, 1);
     var dLastDayThisMonth = new Date(dFirstDayNextMonth - 1);
-
     var nMonthWeekDayStart = dFirstDayThisMonth.getDay();
     var nMonthWeekDayEnd = dLastDayThisMonth.getDay();
     var dCalDateStart = new Date(nY, nM, (nMonthWeekDayStart * -1) + 1);
     var dCalDateEnd = addDays(dLastDayThisMonth, 6 - nMonthWeekDayEnd);
-
     var aWeek = [];
     var aWeekDay = [];
     var oWeekDay = {};
@@ -449,8 +486,7 @@ oDateAndOrTime = (function () {
           }
         }
         sClasses = sClassSide + sClassCal + sClassActive + sClassTL + sClassTR + sClassBL + sClassBR;
-        //        b += '<button class="ctl-day' + sClasses + '" type="button" tabindex="' + Number(i + 6).toString() + '" aria-pressed="false" aria-label="' + o.year + '-' + o.month + '-' + o.day + '" onclick="console.log(event, \'' + o.year.toString() + '-' + o.month.toString() + '-' + o.day.toString() + '\')">'
-        b += '<button class="ctl-day' + sClasses + '" type="button" tabindex="' + Number(i + 6).toString() + '" aria-label="' + o.year + '-' + (Number(o.month) + 1) + '-' + o.day + '" data-year="' + o.year + '" data-month="' + o.month + '"' + ' data-day="' + o.day + '">'
+        b += '<button class="ctl-day' + sClasses + '" type="button" aria-label="' + o.year + '-' + (Number(o.month) + 1) + '-' + o.day + '" data-year="' + o.year + '" data-month="' + o.month + '"' + ' data-day="' + o.day + '">'
         b += o.day.toString();
         b += '</button>';
         s += b;
@@ -461,9 +497,6 @@ oDateAndOrTime = (function () {
 
     var eCalDays = window.document.getElementById('calendar-days');
     eCalDays.innerHTML = s;
-
-    //https://stackoverflow.com/questions/203198/event-binding-on-dynamically-created-elements
-
     // this listen event must run after Days are written to UI.
     listenForButtonClicksOnDays();
   }
@@ -490,7 +523,8 @@ oDateAndOrTime = (function () {
     changeDay(nDayOfMonth, nDayOfWeek);
     writeLabels();
     writeDays(nYear, nMonth);
-    //  console.log('Initialised: date-time-picker');
+    writeShortDate();
+    isInitialised = true;
   }
   return {
     init: init,
