@@ -24,9 +24,23 @@
 
     <!-- NOTE: make calendar no more than 310px wide - and center that 310box vertical / horizontal -->
 
+    <svg class="clip-svg">
+        <defs>
+            <clipPath id="clip-polygon" clipPathUnits="objectBoundingBox">
+                <polygon points="0.43 0, 0.57 0, 1 1, 0 1" />
+            </clipPath>
+        </defs>
+    </svg>
+
     <div class="ui active dimmer">
         <div class="contain-date-time">
             <div class="snuggle-date-time">
+                <div class="display-date-time">
+                    <div class="display-row">
+                        <button id="btn-date" class="ctl-date hide" type="button" aria-label="selected date"></button>
+                        <button id="btn-time" class="ctl-time hide" type="button" area-label="selected time"></button>
+                    </div>
+                </div>
                 <div class="calendar">
                     <div class="calendar-row year">
                         <button class="ctl-ym left" type="button" aria-label="decrease year" onclick="pickDateTime.controlYear(event, '<')">
@@ -62,8 +76,100 @@
                     </div>
                 </div>
                 <!-- calendar -->
+                <div class="clock">
+                    <div class="clock-row hour">
+                        <button class="ctl-hmsm left" type="button" aria-label="decrease hours" onclick="pickDateTime.controlHours(event, '<')">
+                            <i class="angle left icon"></i>
+                        </button>
+
+                        <label for="input-hour">hours</label>
+                        <input id="input-hour" class="ipt-time" type="number" placeholder="hours" value="" aria-label="hour" min="1" max="12" onblur="pickDateTime.directBlurHours(event)">
+
+                        <button class="ctl-hmsm right" type="button" aria-label="increase hours" onclick="pickDateTime.controlHours(event, '>')">
+                            <i class="angle right icon"></i>
+                        </button>
+                    </div>
+                    <div class="clock-row minute">
+                        <button class="ctl-hmsm left" type="button" aria-label="decrease minutes" onclick="pickDateTime.controlMinutes(event, '<')">
+                            <i class="angle left icon"></i>
+                        </button>
+
+                        <label for="input-minute">minutes</label>
+                        <input id="input-minute" class="ipt-time" type="number" placeholder="minutes" value="" aria-label="minute" min="0" max="59"
+                            onblur="pickDateTime.directBlurMinutes(event)">
+
+                        <button class="ctl-hmsm right" type="button" aria-label="increase minutes" onclick="pickDateTime.controlMinutes(event, '>')">
+                            <i class="angle right icon"></i>
+                        </button>
+                    </div>
+                    <div class="clock-row second">
+                        <button class="ctl-hmsm left" type="button" aria-label="decrease seconds" onclick="pickDateTime.controlSeconds(event, '<')">
+                            <i class="angle left icon"></i>
+                        </button>
+
+                        <label for="input-second">seconds</label>
+                        <input id="input-second" class="ipt-time" type="number" placeholder="seconds" value="" aria-label="second" min="0" max="59"
+                            onblur="pickDateTime.directBlurSeconds(event)">
+
+                        <button class="ctl-hmsm right" type="button" aria-label="increase seconds" onclick="pickDateTime.controlSeconds(event, '>')">
+                            <i class="angle right icon"></i>
+                        </button>
+                    </div>
+                    <div class="clock-row millisecond">
+                        <button class="ctl-hmsm left" type="button" aria-label="decrease milliseconds" onclick="pickDateTime.controlMilliseconds(event, '<')">
+                            <i class="angle left icon"></i>
+                        </button>
+
+                        <label for="input-millisecond">milliseconds</label>
+                        <input id="input-millisecond" class="ipt-time" type="number" placeholder="milliseconds" value="" aria-label="millisecond"
+                            min="0" max="999" onblur="pickDateTime.directBlurMilliseconds(event)">
+
+                        <button class="ctl-hmsm right" type="button" aria-label="increase milliseconds" onclick="pickDateTime.controlMilliseconds(event, '>')">
+                            <i class="angle right icon"></i>
+                        </button>
+                    </div>
+                    <div class="clock-row ampm">
+                        <button id="btn-am" class="ctl-ampm left" type="button" aria-label="am" onclick="pickDateTime.controlAMPM(event, 'am')">
+                            AM
+                        </button>
+                        <button id="btn-pm" class="ctl-ampm right" type="button" aria-label="pm" onclick="pickDateTime.controlAMPM(event, 'pm')">
+                            PM
+                        </button>
+                    </div>
+                    <!-- clock face -->
+                    <div class="clock-wrapper">
+                        <div class="clock-frame">
+                            <div class="clock-outer">
+                                <div class="clock-face">
+                                    <div class="hide-lines"></div>
+                                    <div class="middle-panel"></div>
+                                    <div class="center-dot"></div>
+                                    <div class="marker-line main line-1"></div>
+                                    <div class="marker-line line-2"></div>
+                                    <div class="marker-line line-3"></div>
+                                    <div class="marker-line main line-4"></div>
+                                    <div class="marker-line line-5"></div>
+                                    <div class="marker-line line-6"></div>
+                                    <div id="hour-hand" class="hour-hand">
+                                        <div class="hour-end"></div>
+                                    </div>
+                                    <div id="minute-hand" class="minute-hand">
+                                        <div class="minute-end"></div>
+                                    </div>
+                                    <div id="second-hand" class="second-hand">
+                                        <div class="second-end"></div>
+                                    </div>
+                                    <div id="millisecond-hand" class="millisecond-hand"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- clock -->
             </div>
+            <!-- container -->
         </div>
+        <!-- dimmer -->
 
         <script type="text/javascript" src="index.js"></script>
 </body>

@@ -21,6 +21,28 @@ div.calendar button:focus {
   outline: none;
 }
 
+div.clock input[type='button'],
+div.clock input[type='submit'],
+div.clock input[type='reset'],
+div.clock input[type='file']::-webkit-file-upload-button,
+div.clock button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+div.clock input[type='number']::-webkit-inner-spin-button,
+div.clock input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+div.clock input:focus,
+div.clock button:focus {
+  outline: none;
+}
+
+
 /* normalising things */
 
 .contain-date-time,
@@ -50,6 +72,25 @@ div.calendar button:focus {
   margin: 0;
 }
 
+.clock-wrapper {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
 .snuggle-date-time {
   width: 100%;
   max-width: 310px;
@@ -60,11 +101,19 @@ div.calendar button:focus {
   background: white;
 }
 
+.hide {
+  display: none;
+}
+
+
+/* calendar */
+
 .calendar {
   width: 100%;
 }
 
-.calendar-row {
+.calendar-row,
+.clock-row {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -86,45 +135,73 @@ div.calendar button:focus {
   padding-bottom: 7px;
 }
 
-/* calendar control heights */
+.clock-row.minute,
+.clock-row.second,
+.clock-row.millisecond,
+.clock-row.ampm {
+  margin-top: -1px;
+}
+
+.clock-row.ampm {
+  padding-bottom: 7px;
+}
+
+
+/* calendar and clock control heights */
 
 .ctl-today,
 .ctl-ym,
 .ipt-ym,
 .day-label,
-.ctl-day {
+.ctl-day,
+.ipt-time,
+.ctl-hmsm,
+.ctl-ampm {
   min-height: 42px;
   height: 42px;
 }
 
-/* calendar control widths */
+
+/* calendar and clock control widths */
+
 .ctl-today {
   width: 100%;
 }
+
 .ctl-ym,
 .day-label,
-.ctl-day {
+.ctl-day,
+.ctl-hmsm,
+.ctl-ampm {
   min-width: 42px;
   width: 42px;
 }
+
 .ctl-today,
 .ctl-ym,
-.ctl-day {
+.ctl-day,
+.ctl-hmsm,
+.ctl-ampm {
   display: block;
   cursor: pointer;
   background: transparent;
 }
+
 .ctl-day.mute {
   color: #797979;
   /*  background-color: rgb(238, 235, 235); */
 }
+
 .ctl-today.special {
   margin-top: 7px;
   margin-bottom: 7px;
   border: 1px solid;
   border-radius: 3px;
 }
-.ctl-ym.left {
+
+.ctl-ym.left,
+.ctl-hmsm.left,
+.ctl-ampm.left {
   border-top: 1px solid;
   border-left: 1px solid;
   border-bottom: 1px solid;
@@ -132,7 +209,9 @@ div.calendar button:focus {
   border-bottom-left-radius: 3px;
 }
 
-.ctl-ym.right {
+.ctl-ym.right,
+.ctl-hmsm.right,
+.ctl-ampm.right {
   border-top: 1px solid;
   border-right: 1px solid;
   border-bottom: 1px solid;
@@ -140,29 +219,42 @@ div.calendar button:focus {
   border-bottom-right-radius: 3px;
 }
 
+.ctl-ampm.right {
+  border-left: 1px solid;
+}
+
 .ctl-day.tl {
   border-top-left-radius: 3px;
 }
+
 .ctl-day.tr {
   border-top-right-radius: 3px;
 }
+
 .ctl-day.bl {
   border-bottom-left-radius: 3px;
 }
+
 .ctl-day.br {
   border-bottom-right-radius: 3px;
 }
 
-.ctl-ym i {
+.ctl-ym i,
+.ctl-hmsm i {
   margin: 0;
   padding: 0;
 }
 
-.ipt-ym {
+.ipt-ym,
+.ipt-time {
   width: 100%;
   text-align: center;
   border: 1px solid;
   background: #fff;
+}
+
+.ctl-ampm {
+  width: 50%;
 }
 
 .day-label {
@@ -172,24 +264,293 @@ div.calendar button:focus {
   font-weight: 600;
 }
 
+
+/* clock-specific */
+
+.clock-row.hour,
+.clock-row.minute,
+.clock-row.second,
+.clock-row.millisecond {
+  position: relative;
+}
+
+label {
+  position: absolute;
+  bottom: 1px;
+  width: 294px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.clock-frame {
+  width: 294px;
+  height: 294px;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 7px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.clock-outer {
+  width: 260px;
+  height: 260px;
+  min-height: 260px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+}
+
+.clock-face {
+  position: absolute;
+  width: 88%;
+  height: 88%;
+  background: white;
+  top: 6%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+
+.hide-lines {
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  background: white;
+  top: 5%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.middle-panel {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  background: white;
+  top: 25%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.center-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #333;
+  top: calc(50% - 7px);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.marker-line {
+  background: #8A8A8A;
+  width: 1px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.marker-line.main {
+  width: 4px;
+  background: #222;
+}
+
+.line-1 {
+  transform: rotate(0);
+}
+
+.line-2 {
+  transform: rotate(30deg);
+}
+
+.line-3 {
+  transform: rotate(60deg);
+}
+
+.line-4 {
+  transform: rotate(90deg);
+}
+
+.line-5 {
+  transform: rotate(120deg);
+}
+
+.line-6 {
+  transform: rotate(150deg);
+}
+
+.hour-hand {
+  background: white;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
+  position: absolute;
+  top: 17%;
+  left: 0;
+  right: 0;
+  width: 26px;
+  height: calc(33% + 14px);
+  border-radius: 100px;
+  margin: 0 auto;
+  z-index: 5;
+  clip-path: url("#clip-polygon");
+  clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 14px);
+  animation: shadow-hack 10s linear infinite;
+}
+
+.hour-end {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 23%;
+  background: #222;
+}
+
+.minute-hand {
+  background: white;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
+  position: absolute;
+  top: 4%;
+  left: 0;
+  right: 0;
+  width: 26px;
+  height: calc(46% + 14px);
+  border-radius: 100px;
+  margin: 0 auto;
+  z-index: 5;
+  clip-path: url("#clip-polygon");
+  clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 14px);
+  animation: shadow-hack 10s linear infinite;
+}
+
+.minute-end {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 23%;
+  background: #FF5757;
+}
+
+.second-hand {
+  background: #FF5757;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+  position: absolute;
+  top: 2%;
+  left: 0;
+  right: 0;
+  width: 1px;
+  height: calc(50% + 30px);
+  border-radius: 5px;
+  margin: 0 auto;
+  z-index: 6;
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 35px);
+}
+
+.millisecond-hand {
+  background: #57B6FF;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+  position: absolute;
+  top: 2%;
+  left: 0;
+  right: 0;
+  width: 1px;
+  height: calc(50% + 30px);
+  border-radius: 5px;
+  margin: 0 auto;
+  z-index: 7;
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 35px);
+}
+
+.second-end {
+  position: absolute;
+  bottom: 0;
+  left: -3px;
+  height: 7px;
+  width: 7px;
+  border-radius: 50%;
+  background: #FF5757;
+}
+
+@keyframes shadow-hack {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* color */
+
 .ctl-today.special,
 .ctl-ym.left,
 .ctl-ym.right,
-.ipt-ym {
+.ipt-ym,
+.ctl-hmsm.left,
+.ctl-hmsm.right,
+.ctl-ampm.left,
+.ctl-ampm.right,
+.ipt-time {
   border-color: #a2a0a0;
 }
 
 .ctl-today:focus,
 .ctl-ym:focus,
-.ctl-day:focus {
+.ctl-day:focus,
+.ctl-hmsm:focus,
+.ctl-ampm:focus {
   background: #dddada;
 }
+
+label {
+  color: #a2a0a0;
+}
+
 .ctl-today:active,
 .ctl-today.active,
 .ctl-ym:active,
 .ctl-ym.active,
 .ctl-day:active,
-.ctl-day.active {
+.ctl-day.active,
+.ctl-hmsm:active,
+.ctl-hmsm.active,
+.ctl-ampm:active,
+.ctl-ampm.active {
   background: #464646;
   color: #fff;
 }
