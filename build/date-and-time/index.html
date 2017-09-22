@@ -107,7 +107,7 @@
                             <i class="angle left icon"></i>
                         </button>
 
-                        <label for="input-second">seconds</label>
+                        <label for="input-second"><i class="circle icon" aria-hidden="true"></i> seconds <i class="circle icon" aria-hidden="true"></i></label>
                         <input id="input-second" class="ipt-time" type="number" placeholder="seconds" value="" aria-label="second" min="0" max="59"
                             onblur="pickDateTime.directBlurSeconds(event)">
 
@@ -120,7 +120,7 @@
                             <i class="angle left icon"></i>
                         </button>
 
-                        <label for="input-millisecond">milliseconds</label>
+                        <label for="input-millisecond"><i class="square icon" aria-hidden="true"></i> milliseconds <i class="square icon" aria-hidden="true"></i></label>
                         <input id="input-millisecond" class="ipt-time" type="number" placeholder="milliseconds" value="" aria-label="millisecond"
                             min="0" max="999" onblur="pickDateTime.directBlurMilliseconds(event)">
 
@@ -159,7 +159,9 @@
                                     <div id="second-hand" class="second-hand">
                                         <div class="second-end"></div>
                                     </div>
-                                    <div id="millisecond-hand" class="millisecond-hand"></div>
+                                    <div id="millisecond-hand" class="millisecond-hand">
+                                        <div class="millisecond-end"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

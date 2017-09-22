@@ -42,7 +42,6 @@ div.clock button:focus {
   outline: none;
 }
 
-
 /* normalising things */
 
 .contain-date-time,
@@ -105,7 +104,6 @@ div.clock button:focus {
   display: none;
 }
 
-
 /* calendar */
 
 .calendar {
@@ -146,7 +144,6 @@ div.clock button:focus {
   padding-bottom: 7px;
 }
 
-
 /* calendar and clock control heights */
 
 .ctl-today,
@@ -160,7 +157,6 @@ div.clock button:focus {
   min-height: 42px;
   height: 42px;
 }
-
 
 /* calendar and clock control widths */
 
@@ -185,11 +181,6 @@ div.clock button:focus {
   display: block;
   cursor: pointer;
   background: transparent;
-}
-
-.ctl-day.mute {
-  color: #797979;
-  /*  background-color: rgb(238, 235, 235); */
 }
 
 .ctl-today.special {
@@ -240,9 +231,14 @@ div.clock button:focus {
 }
 
 .ctl-ym i,
-.ctl-hmsm i {
+.ctl-hmsm i,
+label .icon {
   margin: 0;
   padding: 0;
+}
+
+label .icon {
+  font-size: 8px;
 }
 
 .ipt-ym,
@@ -264,7 +260,6 @@ div.clock button:focus {
   font-weight: 600;
 }
 
-
 /* clock-specific */
 
 .clock-row.hour,
@@ -285,7 +280,7 @@ label {
 .clock-frame {
   width: 294px;
   height: 294px;
-  border: 1px solid #333;
+  border: 1px solid;
   border-radius: 14px;
   padding: 7px;
   display: -webkit-box;
@@ -315,10 +310,10 @@ label {
 
 .clock-face {
   position: absolute;
-  width: 88%;
-  height: 88%;
+  width: 95%;
+  height: 95%;
   background: white;
-  top: 6%;
+  top: 2.5%;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -340,8 +335,8 @@ label {
 
 .middle-panel {
   position: absolute;
-  width: 50%;
-  height: 50%;
+  width: 49%;
+  height: 49%;
   background: white;
   top: 25%;
   left: 0;
@@ -367,7 +362,7 @@ label {
 }
 
 .marker-line {
-  background: #8A8A8A;
+  background: #8a8a8a;
   width: 1px;
   height: 100%;
   position: absolute;
@@ -380,7 +375,6 @@ label {
 
 .marker-line.main {
   width: 4px;
-  background: #222;
 }
 
 .line-1 {
@@ -419,7 +413,7 @@ label {
   border-radius: 100px;
   margin: 0 auto;
   z-index: 5;
-  clip-path: url("#clip-polygon");
+  clip-path: url('#clip-polygon');
   clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
   transform: rotate(0deg);
   transform-origin: center calc(100% - 14px);
@@ -432,7 +426,6 @@ label {
   left: 0;
   right: 0;
   height: 23%;
-  background: #222;
 }
 
 .minute-hand {
@@ -447,7 +440,7 @@ label {
   border-radius: 100px;
   margin: 0 auto;
   z-index: 5;
-  clip-path: url("#clip-polygon");
+  clip-path: url('#clip-polygon');
   clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
   transform: rotate(0deg);
   transform-origin: center calc(100% - 14px);
@@ -460,11 +453,9 @@ label {
   left: 0;
   right: 0;
   height: 23%;
-  background: #FF5757;
 }
 
 .second-hand {
-  background: #FF5757;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
   position: absolute;
   top: 2%;
@@ -480,7 +471,6 @@ label {
 }
 
 .millisecond-hand {
-  background: #57B6FF;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
   position: absolute;
   top: 2%;
@@ -502,7 +492,14 @@ label {
   height: 7px;
   width: 7px;
   border-radius: 50%;
-  background: #FF5757;
+}
+
+.millisecond-end {
+  position: absolute;
+  bottom: 0;
+  left: -3px;
+  height: 7px;
+  width: 7px;
 }
 
 @keyframes shadow-hack {
@@ -514,8 +511,12 @@ label {
   }
 }
 
-
 /* color */
+
+.ctl-day.mute {
+  color: #797979;
+  /*  background-color: rgb(238, 235, 235); */
+}
 
 .ctl-today.special,
 .ctl-ym.left,
@@ -537,10 +538,6 @@ label {
   background: #dddada;
 }
 
-label {
-  color: #a2a0a0;
-}
-
 .ctl-today:active,
 .ctl-today.active,
 .ctl-ym:active,
@@ -553,4 +550,36 @@ label {
 .ctl-ampm.active {
   background: #464646;
   color: #fff;
+}
+
+/* clock colors */
+
+label {
+  color: #a2a0a0;
+}
+
+.clock-frame {
+  border-color: #222;
+}
+
+.marker-line.main {
+  background: #222;
+}
+
+.hour-end {
+  background: #222;
+}
+
+.minute-end {
+  background: #ff5757;
+}
+
+.second-hand,
+.second-end {
+  background: #ff5757;
+}
+
+.millisecond-hand,
+.millisecond-end {
+  background: #57b6ff;
 }

@@ -182,25 +182,41 @@ oDateAndOrTime = (function() {
     eInputHour.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        //  TODO
+        if (isDifferentTime(eInputHour, nHour, 'hour') === false) {
+          return;
+        }
+        fixHoursInput();
+        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
       }
     });
     eInputMinute.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        //  TODO
+        if (isDifferentTime(eInputMinute, nMinute, '') === false) {
+          return;
+        }
+        fixMinutesOrSecondsInput('minutes');
+        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
       }
     });
     eInputSecond.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        //  TODO
+        if (isDifferentTime(eInputSecond, nSecond, '') === false) {
+          return;
+        }
+        fixMinutesOrSecondsInput('seconds');
+        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
       }
     });
     eInputMillisecond.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        //  TODO
+        if (isDifferentTime(eInputMillisecond, nMillisecond, '') === false) {
+          return;
+        }
+        fixMillisecondsInput();
+        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
       }
     });
   }
@@ -249,10 +265,12 @@ oDateAndOrTime = (function() {
     nRotateHour = nRotateHour % 12;
     nRotateHour = nRotateHour ? nRotateHour : 12; // the hour '0' should be '12'
 
-    eHandHour.style.transform = 'rotate(' + (nRotateHour * 30 + nMinute / 2) + 'deg)';
+    eHandHour.style.transform =
+      'rotate(' + (nRotateHour * 30 + nMinute / 2) + 'deg)';
     eHandMinute.style.transform = 'rotate(' + nMinute * 6 + 'deg)';
     eHandSecond.style.transform = 'rotate(' + nSecond * 6 + 'deg)';
-    eHandMillisecond.style.transform = 'rotate(' + Math.floor(nMillisecond / 1000 * 360) + 'deg)';
+    eHandMillisecond.style.transform =
+      'rotate(' + Math.floor(nMillisecond / 1000 * 360) + 'deg)';
   }
 
   function setTimeNumbers(t) {
@@ -261,7 +279,7 @@ oDateAndOrTime = (function() {
     nSecond = t.getSeconds();
     nMillisecond = t.getMilliseconds();
     sMeridiem = nHour >= 12 ? 'pm' : 'am';
-    
+
     if (sMeridiem === 'am') {
       eButtonPM.classList.remove('active');
       eButtonAM.classList.add('active');
@@ -282,8 +300,22 @@ oDateAndOrTime = (function() {
   }
 
   function isDifferentMonth() {
-    var nTemp = Number(eInputMonth.value);
+    var nTemp = Number(eInputMonth.value) - 1;
     if (nTemp !== Number(nMonth) || eInputMonth.value === '') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function isDifferentTime(eT, nT, sSpecial) {
+    var nTemp = Number(eT.value);
+    if (sSpecial === 'hour') {
+      if (sMeridiem === 'pm') {
+        nTemp += 12;
+      }
+    }
+    if (nTemp !== Number(nT) || eT.value === '') {
       return true;
     } else {
       return false;
@@ -330,11 +362,11 @@ oDateAndOrTime = (function() {
         if (nYear < nLowestYearLimit) {
           nYear = nLowestYearLimit;
         }
-//        changeCalendarControls(nYear, nMonth, nDayOfMonth);
+        //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
       }
       if (sCommand === '>') {
         nYear += 1;
-//        changeCalendarControls(nYear, nMonth, nDayOfMonth);
+        //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
       }
     }
     if (sField === 'm') {
@@ -343,14 +375,14 @@ oDateAndOrTime = (function() {
         if (nMonth < 0) {
           nMonth = 12 - 1;
         }
-//        changeCalendarControls(nYear, nMonth, nDayOfMonth);
+        //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
       }
       if (sCommand === '>') {
         nMonth += 1;
         if (nMonth > 12 - 1) {
           nMonth = 0;
         }
-//        changeCalendarControls(nYear, nMonth, nDayOfMonth);
+        //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
       }
     }
     changeCalendarControls(nYear, nMonth, nDayOfMonth);
@@ -461,7 +493,8 @@ oDateAndOrTime = (function() {
   function fixYearInput() {
     var bNeedsFix = false;
     var nTemp = Number(eInputYear.value);
-    if (nTemp < nLowestYearLimit) {
+
+    if (nTemp < nLowestYearLimit || eInputYear.value === '') {
       nYear = nLowestYearLimit;
       bNeedsFix = true;
     }
@@ -473,17 +506,16 @@ oDateAndOrTime = (function() {
   function fixMonthInput() {
     var bNeedsFix = false;
     var nTemp = Number(eInputMonth.value) - 1;
+
     if (nTemp > 12) {
-      //      eInputMonth.value = 11;
       nTemp = 11;
       bNeedsFix = true;
     }
     if (nTemp < 0) {
-      //      eInputMonth.value = 0;
       nTemp = 0;
       bNeedsFix = true;
     }
-    if (nTemp.toString() !== eInputMonth.value.toString()) {
+    if (nTemp.toString() !== nMonth.toString()) {
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
@@ -496,7 +528,11 @@ oDateAndOrTime = (function() {
     if (isDifferentYear() === false) {
       return;
     }
-    nYear = Number(eInputYear.value);
+    if (eInputYear.value === '') {
+      nYear = nLowestYearLimit;
+    } else {
+      nYear = Number(eInputYear.value);
+    }
     if (nYear < nLowestYearLimit) {
       nYear = nLowestYearLimit;
     }
@@ -514,30 +550,118 @@ oDateAndOrTime = (function() {
     writeDays(nYear, nMonth);
   }
 
+  function fixHoursInput() {
+    var bNeedsFix = false;
+    var nTemp = Number(eInputHour.value);
+
+    if (nTemp > 12) {
+      nTemp = 12;
+      bNeedsFix = true;
+    }
+    if (nTemp < 1) {
+      nTemp = 1;
+      bNeedsFix = true;
+    }
+    if (nTemp.toString() !== nHour.toString()) {
+      bNeedsFix = true;
+    }
+    if (bNeedsFix === true) {
+      eInputHour.value = nTemp;
+      if (sMeridiem === 'pm') {
+        nHour = nTemp + 12;
+      } else {
+        nHour = nTemp;
+      }
+    }
+  }
+
+  function fixMinutesOrSecondsInput(sType) {
+    var bNeedsFix = false;
+    var nTemp;
+    var nValue;
+    if (sType === 'minutes') {
+      nTemp = Number(eInputMinute.value);
+      nValue = nMinute;
+    }
+    if (sType === 'seconds') {
+      nTemp = Number(eInputSecond.value);
+      nValue = nSecond;
+    }
+    
+    if (nTemp > 59) {
+      nTemp = 59;
+      bNeedsFix = true;
+    }
+    if (nTemp < 0) {
+      nTemp = 0;
+      bNeedsFix = true;
+    }
+    if (nTemp.toString() !== nValue.toString()) {
+      bNeedsFix = true;
+    }
+    if (bNeedsFix === true) {
+      if (sType === 'minutes') {
+        eInputMinute.value = nTemp;
+        nMinute = nTemp;
+      }
+      if (sType === 'seconds') {
+        eInputSecond.value = nTemp;
+        nSecond = nTemp;
+      }
+    }
+  }
+
+  function fixMillisecondsInput() {
+    var bNeedsFix = false;
+    var nTemp = Number(eInputMillisecond.value);
+
+    if (nTemp > 999) {
+      nTemp = 999;
+      bNeedsFix = true;
+    }
+    if (nTemp < 0) {
+      nTemp = 0;
+      bNeedsFix = true;
+    }
+    if (nTemp.toString() !== nMillisecond.toString()) {
+      bNeedsFix = true;
+    }
+    if (bNeedsFix === true) {
+      eInputMillisecond.value = nTemp;
+      nMillisecond = nTemp;
+    }    
+  }
+
   function directBlurHours(e) {
-    if (isDifferentHour() === false) {
+    if (isDifferentTime(eInputHour, nHour, 'hour') === false) {
       return;
     }
-    nYear = Number(eInputYear.value);
-    if (nYear < nLowestYearLimit) {
-      nYear = nLowestYearLimit;
-    }
-    fixYearInput();
-    changeCalendarControls(nYear, nMonth, nDayOfMonth);
-    writeDays(nYear, nMonth);
-    //todo
+    fixHoursInput();
+    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
   }
 
   function directBlurMinutes(e) {
-    // TODO
+    if (isDifferentTime(eInputMinute, nMinute, '') === false) {
+      return;
+    }
+    fixMinutesOrSecondsInput('minutes');
+    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
   }
 
   function directBlurSeconds(e) {
-    // TODO
+    if (isDifferentTime(eInputSecond, nSecond, '') === false) {
+      return;
+    }
+    fixMinutesOrSecondsInput('seconds');
+    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
   }
 
   function directBlurMilliseconds(e) {
-    // TODO
+    if (isDifferentTime(eInputMillisecond, nMillisecond, '') === false) {
+      return;
+    }
+    fixMillisecondsInput();
+    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
   }
 
   function changeCalendarControls(nY, nM, nD) {
@@ -877,7 +1001,7 @@ oDateAndOrTime = (function() {
     directBlurMonth: directBlurMonth,
     setToday: setToday,
     directBlurHours: directBlurHours,
-    directBlurMinutes: directBlurMinutes, 
+    directBlurMinutes: directBlurMinutes,
     directBlurSeconds: directBlurSeconds,
     directBlurMilliseconds: directBlurMilliseconds,
     controlHours: handleHours,
