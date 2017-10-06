@@ -1,0 +1,76 @@
+.contain-date-time,
+.contain-date-time div,
+.contain-date-time button {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.contain-date-time {
+  height: 100%;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.snuggle-date-time {
+  height: 100%;
+  width: 100%;
+  max-height: 543px;
+  max-width: 310px;
+  margin-bottom: 5px;
+  border: 1px solid white;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 10px 6px -6px #7f7e7e;
+  box-shadow: 0 10px 6px -6px #7f7e7e;
+  background: white;
+  overflow-y: scroll;
+  padding: 5px;
+}
+
+.search-groups {
+  width: 100%;
+}
+
+.list-groups {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-groups li {
+  margin: 0;
+  padding: 0;
+}
+
+.btn-listitem-group {
+  background: transparent;
+  border: 0;
+  width: 100%;
+  outline: none;
+  position: relative;
+  height: 54px;
+  padding-left: 58px;
+  text-align: left;
+  font-size: 20px;
+  margin-top: 5px;
+}
+
+.btn-listitem-group img {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}

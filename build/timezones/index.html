@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>time zones</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css" integrity="sha256-/Z28yXtfBv/6/alw+yZuODgTbKZm86IKbPE/5kjO/xY="
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+    <div class="ui active dimmer">
+        <div class="contain-date-time">
+            <div class="snuggle-date-time">
+                <div class="select-time-zone">
+                    <div id="groups">
+                        <div class="ui icon input search-groups">
+                            <input id="search-parent" onkeyup="myMoment.filterListGroups(event)" type="text" placeholder="Search Groups...">
+                            <i class="search icon"></i>
+                        </div>
+                        <ul id="list-groups" class="list-groups">
+
+                        </ul>
+                    </div>
+                    <div id="timezones"></div>
+                    <div id="parents">
+
+                    </div>
+                    <div id="children">
+
+                    </div>
+                </div>
+                <!-- select-time-zone -->
+            </div>
+            <!-- snuggly -->
+        </div>
+        <!-- container -->
+    </div>
+    <!-- dimmer -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" integrity="sha256-1hjUhpc44NwiNg8OwMu2QzJXhD8kcj+sJA3aCQZoUjg="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data.min.js" integrity="sha256-Mbm+oB/+8ujzEer9u83ZRKEhlPohbY9USJ4VpxiNR9w="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="index.js"></script>
+</body>
+
+</html>
