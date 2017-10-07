@@ -1,6 +1,7 @@
 var suiMoment = (function() {
   /* Time Zones */
   var eListGroups = window.document.getElementById('list-groups');
+  var eButtonsTimeZones;
   var aTimeZones = moment.tz.names();
   var aTimeZoneParents = [];
   var oTimeZones = {};
@@ -42,9 +43,15 @@ var suiMoment = (function() {
       var button = window.document.createElement('button');
       var img = window.document.createElement('img');
       var s = '<img src="images/50x50/' + sLIlc + '.png" alt="">' + oListItem;
+      var aButtonClasses = ['ctl-listitem-group'];
 
-      button.className = 'btn-listitem-group';
       button.setAttribute('data-button', sLIlc);
+
+      if (oGuessedTimeZone.parent.toLowerCase() === sLIlc) {
+        aButtonClasses.push('active');
+      }
+
+      button.className = aButtonClasses.join(' ').trim();
 
       img.src = 'images/50x50/' + sLIlc + '.png';
       img.alt = '';
@@ -182,9 +189,10 @@ var suiMoment = (function() {
     var res = sT.replace(/_/g, ' ');
     return { raw: sT, formatted: res, hasID: hasID };
   }
-  function getAsyncTZs(callback) {
+  function getAsyncTZs() {
     //   console.log(aTimeZones.sort());
     //  console.log(o);
+    console.log('a');
     unpackTimeZones();
     var other = '';
     var sGuess = moment.tz.guess();
@@ -195,11 +203,9 @@ var suiMoment = (function() {
       child: returnZoneChild(sGuess).raw
     };
 
-    //console.log('a', aTimeZones)
     var oZoneChildTemp;
     var sTimeZoneTemp;
     for (var i in aTimeZones) {
-      //      console.log(other)
       oZoneChildTemp = null;
       oZoneChildTemp = returnZoneChild(aTimeZones[i]);
 
@@ -226,14 +232,20 @@ var suiMoment = (function() {
     createOptionsParent(aTimeZoneParents);
     createListGroups(aTimeZoneParents);
     createOptionsChildren(offsetTmz, sSelectedParent, oGuessedTimeZone.child);
+  }
 
-    if (callback && typeof callback === 'function') {
-      callback();
-    }
+  function addListeners() {
+    console.log('b');
+    eButtonsTimeZones = window.document.getElementsByClassName(
+      'ctl-listitem-group'
+    );
   }
 
   function init() {
-    getAsyncTZs();
+    // addListeners(getAsyncTZs());
+    async.waterfall([addListeners, getAsyncTZs()], function(err, result) {
+      console.log('initialized...');
+    });
   }
 
   return {

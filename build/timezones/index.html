@@ -31,9 +31,11 @@
                             <input id="search-parent" onkeyup="myMoment.filterListGroups(event)" type="text" placeholder="Search Groups...">
                             <i class="search icon"></i>
                         </div>
-                        <ul id="list-groups" class="list-groups">
+                        <div class="contain-tz-list">
+                            <ul id="list-groups" class="list-groups">
 
-                        </ul>
+                            </ul>
+                        </div>
                     </div>
                     <div id="timezones"></div>
                     <div id="parents">
@@ -55,6 +57,7 @@
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data.min.js" integrity="sha256-Mbm+oB/+8ujzEer9u83ZRKEhlPohbY9USJ4VpxiNR9w="
         crossorigin="anonymous"></script>
+    <script src="../../node_modules/async/dist/async.min.js"></script>
     <script type="text/javascript" src="index.js"></script>
 </body>
 
