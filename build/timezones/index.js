@@ -1,12 +1,18 @@
-var suiMoment = (function() {
+var suiMoment = (function () {
   /* Time Zones */
+  var eGroups = window.document.getElementById('groups');
+  var eTimeZones = window.document.getElementById('timezones');
   var eListGroups = window.document.getElementById('list-groups');
-  var eButtonsTimeZones;
+  var eListTimezones = window.document.getElementById('list-timezones');
+  var eTimezoneGroup = window.document.getElementById('timezone-group');
+  var eTimezoneSpecific = window.document.getElementById('timezone-specific');
+  var eButtonsGroups;
   var aTimeZones = moment.tz.names();
   var aTimeZoneParents = [];
   var oTimeZones = {};
   var oGuessedTimeZone = {};
-  var sSelectedParent = '';
+  var sSelectedParent = 'Choose Area...';
+  var sSelectedChild = 'Choose Location...';
   var offsetTmz = [];
 
   function onInputParentChange(e) {
@@ -25,7 +31,7 @@ var suiMoment = (function() {
     // Loop through all list items, and hide those who don't match the search query
     for (i = 0; i < li.length; i++) {
       button = li[i].getElementsByTagName('button')[0];
-      sData = button.getAttribute('data-button');
+      sData = button.getAttribute('data-button').toLowerCase();
 
       if (sData.indexOf(filter) > -1) {
         li[i].style.display = '';
@@ -37,7 +43,7 @@ var suiMoment = (function() {
 
   function createListGroups(aP) {
     var frag = window.document.createDocumentFragment();
-    var aT = aP.map(function(oListItem) {
+    var aT = aP.map(function (oListItem) {
       var sLIlc = oListItem.toLowerCase();
       var li = window.document.createElement('li');
       var button = window.document.createElement('button');
@@ -45,7 +51,7 @@ var suiMoment = (function() {
       var s = '<img src="images/50x50/' + sLIlc + '.png" alt="">' + oListItem;
       var aButtonClasses = ['ctl-listitem-group'];
 
-      button.setAttribute('data-button', sLIlc);
+      button.setAttribute('data-button', oListItem);
 
       if (oGuessedTimeZone.parent.toLowerCase() === sLIlc) {
         aButtonClasses.push('active');
@@ -93,7 +99,7 @@ var suiMoment = (function() {
   function doChildOptionsWork(select, aC, sSelectedParent, sSelectedChild) {
     if (sSelectedParent !== '*') {
       // filter list, then do stuff
-      var res = aC.filter(function(x) {
+      var res = aC.filter(function (x) {
         if (x.sZoneParent === sSelectedParent) {
           return x;
         }
@@ -123,6 +129,71 @@ var suiMoment = (function() {
     }
   }
 
+  function createListGroupTimeZones(aP) {
+    //  TODO
+    // for (var i = 0; i < aC.length; i++) {
+    //   if (aC[i] !== sSelectedParent) {
+    //     select.options.add(new Option(aC[i].sZoneChildUI, aC[i].sZoneChild));
+    //   } else {
+    //     select.options.add(
+    //       new Option(aC[i].sZoneChildUI, aC[i].sZoneChild, true, true)
+    //     );
+    //   }
+    // }
+
+    var sLIlc = sSelectedParent.toLocaleLowerCase();
+    var frag = window.document.createDocumentFragment();
+    var s = '<img src="images/50x50/' + sLIlc + '.png" alt="">' + sLIlc;
+    var oNow = moment();
+
+    var res = aP.filter(function (x) {
+      if (x.sZoneParent === sSelectedParent) {
+        return x;
+      }
+    });
+
+    for (var i = 0; i < res.length; i++) {
+      var li = window.document.createElement('li');
+      var button = window.document.createElement('button');
+      var img = window.document.createElement('img');
+      var spanTitle = window.document.createElement('span');
+      var spanAbout = window.document.createElement('span');
+      var aButtonClasses = ['ctl-listitem-timezone'];
+
+      button.setAttribute('data-button', res[i].sZoneChildUI);
+      button.setAttribute('data-tzid', res[i].timeZoneId);
+      button.className = aButtonClasses.join(' ').trim();
+
+      img.src = 'images/50x50/' + sLIlc + '.png';
+      img.alt = '';
+
+      spanTitle.setAttribute('class', 'tz-title');
+      spanAbout.setAttribute('class', 'tz-detail');
+
+      spanTitle.appendChild(window.document.createTextNode(res[i].sZoneChildUI));
+      spanAbout.appendChild(window.document.createTextNode(oNow.tz(res[i].timeZoneId).format('hh:mm a') + ' (' + res[i].timeZoneLabel + ')'));
+
+      button.appendChild(img);
+      button.appendChild(spanTitle);
+      button.appendChild(spanAbout)
+
+      li.appendChild(button);
+      frag.appendChild(li);
+    }
+
+
+    // var aT = aP.map(function (oListItem) {
+    //   console.log(oListItem)
+    //   var sLIlc = oListItem.toLowerCase();
+
+    //   if (oGuessedTimeZone.parent.toLowerCase() === sLIlc) {
+    //     aButtonClasses.push('active');
+    //   }
+
+    // });
+    eListTimezones.appendChild(frag);
+  }
+
   function replaceOptionsChildren(aC, sSelectedParent, sSelectedChild) {
     var div = document.querySelector('#children');
 
@@ -148,7 +219,7 @@ var suiMoment = (function() {
 
   function unpackTimeZones() {
     aTimeZoneParents = aTimeZones
-      .map(function(s) {
+      .map(function (s) {
         if (s.indexOf('/') > -1) {
           var sZoneParent = s.substr(0, s.indexOf('/'));
 
@@ -159,16 +230,17 @@ var suiMoment = (function() {
           }
         }
       })
-      .filter(function(value, index, self) {
+      .filter(function (value, index, self) {
         return self.indexOf(value) === index;
       })
-      .filter(function(element) {
+      .filter(function (element) {
         return element !== undefined;
       })
       .sort();
 
     //    console.log(aTimeZoneParents);
   }
+
   function returnZoneParent(s) {
     var nI = s.indexOf('/');
     var sT = s;
@@ -177,6 +249,7 @@ var suiMoment = (function() {
     }
     return sT;
   }
+
   function returnZoneChild(s) {
     var nI = s.indexOf('/');
     var sT = s;
@@ -187,8 +260,13 @@ var suiMoment = (function() {
       hasID = true;
     }
     var res = sT.replace(/_/g, ' ');
-    return { raw: sT, formatted: res, hasID: hasID };
+    return {
+      raw: sT,
+      formatted: res,
+      hasID: hasID
+    };
   }
+
   function getAsyncTZs() {
     //   console.log(aTimeZones.sort());
     //  console.log(o);
@@ -202,6 +280,9 @@ var suiMoment = (function() {
       parent: returnZoneParent(sGuess),
       child: returnZoneChild(sGuess).raw
     };
+
+    setLabelArea(oGuessedTimeZone.parent);
+    setLabelLocation(oGuessedTimeZone.child);
 
     var oZoneChildTemp;
     var sTimeZoneTemp;
@@ -224,7 +305,7 @@ var suiMoment = (function() {
       } // oZoneChildTemp.hasID === true
     }
 
-    offsetTmz.sort(function(a, b) {
+    offsetTmz.sort(function (a, b) {
       return a.timeZone - b.timeZone;
     });
 
@@ -234,16 +315,55 @@ var suiMoment = (function() {
     createOptionsChildren(offsetTmz, sSelectedParent, oGuessedTimeZone.child);
   }
 
+  function updateSelection(sParent, sChild) {
+    eTimezoneGroup.textContent = sParent;
+    eTimezoneSpecific = sChild;
+  }
+
+  function removeActiveFromButtons(ele) {
+    for (var i = 0; i < ele.length; i++) {
+      ele[i].classList.remove('active');
+    }
+  }
+
+  function onClickButtonGroup(event) {
+    var btnAttribute = this.getAttribute("data-button");
+    removeActiveFromButtons(eButtonsGroups);
+    event.target.classList.add('active');
+    sSelectedParent = btnAttribute;
+    updateSelection(sSelectedParent, '');
+    createListGroupTimeZones(offsetTmz);
+    eGroups.classList.add('hide');
+    eTimeZones.classList.remove('hide');
+  }
+
+  function listenerClickGroups(ele) {
+    for (var i = 0; i < ele.length; i++) {
+      ele[i].addEventListener('click', onClickButtonGroup, false);
+    }
+  }
+
+  function setLabelArea(sArea) {
+    eTimezoneGroup.textContent = sArea;
+  }
+
+  function setLabelLocation(sLocation) {
+    eTimezoneSpecific.textContent = sLocation;
+  }
+
   function addListeners() {
     console.log('b');
-    eButtonsTimeZones = window.document.getElementsByClassName(
+    eButtonsGroups = window.document.getElementsByClassName(
       'ctl-listitem-group'
     );
+    listenerClickGroups(eButtonsGroups);
   }
 
   function init() {
-    // addListeners(getAsyncTZs());
-    async.waterfall([addListeners, getAsyncTZs()], function(err, result) {
+    setLabelArea(sSelectedParent);
+    setLabelLocation(sSelectedChild);
+
+    async.waterfall([addListeners, getAsyncTZs()], function (err, result) {
       console.log('initialized...');
     });
   }
@@ -256,14 +376,3 @@ var suiMoment = (function() {
 
 var myMoment = suiMoment;
 myMoment.init();
-
-/*
-  function mySandwich(param1, param2, callback) {
-      alert('Started eating my sandwich.\n\nIt has: ' + param1 + ', ' + param2);
-      if (callback && typeof(callback) === "function") {
-          callback();
-      }
-  }
-  
-  mySandwich('ham', 'cheese', 'vegetables');
-  */

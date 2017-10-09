@@ -47,22 +47,40 @@
   overflow-y: scroll;
 }
 
-.search-groups {
+.search-groups,
+.search-timezones {
   width: 100%;
 }
 
-.list-groups {
+.list-groups,
+.list-timezones {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-.list-groups li {
+.list-groups li,
+.list-timezones li {
   margin: 0;
   padding: 0;
 }
 
 .ctl-listitem-group {
+  font-size: 20px;
+}
+
+.tz-title,
+.tz-detail {
+  width: 100%;
+  display: block;
+}
+
+.tz-title {
+  font-size: 18px;
+}
+
+.ctl-listitem-group,
+.ctl-listitem-timezone {
   background: transparent;
   width: calc(100% - 2px);
   outline: none;
@@ -70,13 +88,14 @@
   height: 64px;
   padding-left: 64px;
   text-align: left;
-  font-size: 20px;
+
   border-top: 1px solid;
   border-right: 1px solid;
   border-bottom: 1px solid;
 }
 
-.ctl-listitem-group img {
+.ctl-listitem-group img,
+.ctl-listitem-timezone img {
   position: absolute;
   left: 0;
   top: 50%;
@@ -87,14 +106,18 @@
 }
 
 /* colors */
-.ctl-listitem-group {
+.ctl-listitem-group,
+.ctl-listitem-timezone {
   border-color: #a2a0a0;
 }
-.ctl-listitem-group:focus {
+.ctl-listitem-group:focus,
+.ctl-listitem-timezone:focus {
   background: #dddada;
 }
 .ctl-listitem-group:active,
-.ctl-listitem-group.active {
+.ctl-listitem-group.active,
+.ctl-listitem-timezone:active,
+.ctl-listitem-timezone.active {
   background: #464646;
   color: #fff;
 }
@@ -103,4 +126,8 @@
 }
 .contain-tz-list ul li:first-child {
   margin-top: 0;
+}
+
+.hide {
+  display: none;
 }

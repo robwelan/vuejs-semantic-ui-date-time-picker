@@ -26,6 +26,10 @@
         <div class="contain-date-time">
             <div class="snuggle-date-time">
                 <div class="select-time-zone">
+                    <div>
+                        <button id="timezone-group"></button>/
+                        <button id="timezone-specific"></button>
+                    </div>
                     <div id="groups">
                         <div class="ui icon input search-groups">
                             <input id="search-parent" onkeyup="myMoment.filterListGroups(event)" type="text" placeholder="Search Groups...">
@@ -37,7 +41,17 @@
                             </ul>
                         </div>
                     </div>
-                    <div id="timezones"></div>
+                    <div id="timezones" class="hide">
+                        <div class="ui icon input search-timezones">
+                            <input id="search-timezone" onkeyup="myMoment.filterListTimeZones(event)" type="text" placeholder="Search Timezones...">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="contain-tz-list">
+                            <ul id="list-timezones" class="list-timezones">
+
+                            </ul>
+                        </div>
+                    </div>
                     <div id="parents">
 
                     </div>
