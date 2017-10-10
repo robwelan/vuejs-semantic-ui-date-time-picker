@@ -26,37 +26,32 @@
         <div class="contain-date-time">
             <div class="snuggle-date-time">
                 <div class="select-time-zone">
-                    <div>
-                        <button id="timezone-group"></button>/
-                        <button id="timezone-specific"></button>
+                    <div class="wrap-selection-buttons">
+                        <button id="timezone-area"></button>
+                        <span>/</span>
+                        <button id="timezone-location"></button>
                     </div>
-                    <div id="groups">
-                        <div class="ui icon input search-groups">
-                            <input id="search-parent" onkeyup="myMoment.filterListGroups(event)" type="text" placeholder="Search Groups...">
-                            <i class="search icon"></i>
+                    <div id="areas" class="hide">
+                        <div class="ui icon input search-areas">
+                            <input id="search-area" onkeyup="myMoment.filterListAreas(event)" type="text" placeholder="Search Areas...">
+                            <i id="search-area-icon" class="search link icon" role="button" aria-hidden="true" data-type="search"></i>
                         </div>
                         <div class="contain-tz-list">
-                            <ul id="list-groups" class="list-groups">
+                            <ul id="list-areas" class="list-areas">
 
                             </ul>
                         </div>
                     </div>
-                    <div id="timezones" class="hide">
-                        <div class="ui icon input search-timezones">
-                            <input id="search-timezone" onkeyup="myMoment.filterListTimeZones(event)" type="text" placeholder="Search Timezones...">
-                            <i class="search icon"></i>
+                    <div id="locations" class="hide">
+                        <div class="ui icon input search-locations">
+                            <input id="search-location" onkeyup="myMoment.filterListLocations(event)" type="text" placeholder="Search Locations...">
+                            <i id="search-location-icon" class="search link icon" role="button" aria-hidden="true" data-type="search"></i>
                         </div>
                         <div class="contain-tz-list">
-                            <ul id="list-timezones" class="list-timezones">
+                            <ul id="list-locations" class="list-locations">
 
                             </ul>
                         </div>
-                    </div>
-                    <div id="parents">
-
-                    </div>
-                    <div id="children">
-
                     </div>
                 </div>
                 <!-- select-time-zone -->

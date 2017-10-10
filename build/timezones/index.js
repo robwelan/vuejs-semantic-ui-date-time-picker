@@ -1,37 +1,44 @@
-var suiMoment = (function () {
+var suiMoment = (function() {
   /* Time Zones */
-  var eGroups = window.document.getElementById('groups');
-  var eTimeZones = window.document.getElementById('timezones');
-  var eListGroups = window.document.getElementById('list-groups');
-  var eListTimezones = window.document.getElementById('list-timezones');
-  var eTimezoneGroup = window.document.getElementById('timezone-group');
-  var eTimezoneSpecific = window.document.getElementById('timezone-specific');
-  var eButtonsGroups;
+  var SELECTED_AREA = 'Choose Area...';
+  var SELECTED_LOCATION = 'Choose Location...';
+  var eAreas = window.document.getElementById('areas');
+  var eLocations = window.document.getElementById('locations');
+  var eListAreas = window.document.getElementById('list-areas');
+  var eListLocations = window.document.getElementById('list-locations');
+  var eTimezoneArea = window.document.getElementById('timezone-area');
+  var eTimezoneLocation = window.document.getElementById('timezone-location');
+  var eSearchArea = window.document.getElementById('search-area');
+  var eSearchLocation = window.document.getElementById('search-location');
+  var eSearchAreaIcon = window.document.getElementById('search-area-icon');
+  var eSearchLocationIcon = window.document.getElementById(
+    'search-location-icon'
+  );
+  var eButtonsAreas;
+  var eButtonsLocations;
   var aTimeZones = moment.tz.names();
-  var aTimeZoneParents = [];
-  var oTimeZones = {};
-  var oGuessedTimeZone = {};
-  var sSelectedParent = 'Choose Area...';
-  var sSelectedChild = 'Choose Location...';
+  var aTimeZoneAreas = [];
+  var oGuessedLocation = {};
+  var sSelectedArea = SELECTED_AREA;
+  var sSelectedLocation = SELECTED_LOCATION;
   var offsetTmz = [];
 
-  function onInputParentChange(e) {
-    var sCheck = e.target.value;
-    if (sCheck !== sSelectedParent) {
-      sSelectedParent = e.target.value;
-      replaceOptionsChildren(offsetTmz, sSelectedParent, '');
-    }
-  }
+  function waterfallEmpty() {}
 
-  function filterListGroups(e) {
+  function filterListAreas(e) {
     filter = e.target.value.toLowerCase();
-    li = eListGroups.getElementsByTagName('li');
+    if (filter !== '') {
+      eSearchAreaIcon.classList.remove('search');
+      eSearchAreaIcon.classList.add('close');
+      eSearchAreaIcon.setAttribute('data-search', 'clear');
+    }
+    li = eListAreas.getElementsByTagName('li');
     var button, sData;
 
     // Loop through all list items, and hide those who don't match the search query
     for (i = 0; i < li.length; i++) {
       button = li[i].getElementsByTagName('button')[0];
-      sData = button.getAttribute('data-button').toLowerCase();
+      sData = button.getAttribute('data-area').toLowerCase();
 
       if (sData.indexOf(filter) > -1) {
         li[i].style.display = '';
@@ -41,24 +48,81 @@ var suiMoment = (function () {
     }
   }
 
-  function createListGroups(aP) {
+  function filterListLocations(e) {
+    filter = e.target.value.toLowerCase();
+    if (filter !== '') {
+      eSearchLocationIcon.classList.remove('search');
+      eSearchLocationIcon.classList.add('close');
+      eSearchLocationIcon.setAttribute('data-search', 'clear');
+    }
+    li = eListLocations.getElementsByTagName('li');
+    var button, sData;
+
+    // Loop through all list items, and hide those who don't match the search query
+    for (i = 0; i < li.length; i++) {
+      button = li[i].getElementsByTagName('button')[0];
+      sData = button.getAttribute('data-location-ui').toLowerCase();
+
+      if (sData.indexOf(filter) > -1) {
+        li[i].style.display = '';
+      } else {
+        li[i].style.display = 'none';
+      }
+    }
+  }
+
+  function returnGeneratedButtonAll(sType) {
+    var button = window.document.createElement('button');
+    var img = window.document.createElement('img');
+    var aButtonClasses = [sType];
+
+    aButtonClasses.push('tl');
+    aButtonClasses.push('tr');
+
+    button.className = aButtonClasses.join(' ').trim();
+    button.setAttribute('data-area', 'All');
+
+    img.src = 'images/50x50/etc.png';
+    img.alt = '';
+
+    button.appendChild(img);
+    button.appendChild(window.document.createTextNode('All'));
+
+    return button;
+  }
+
+  function createListAreas(aP) {
     var frag = window.document.createDocumentFragment();
-    var aT = aP.map(function (oListItem) {
+    var li = window.document.createElement('li');
+
+    button = returnGeneratedButtonAll('ctl-listitem-area');
+    li.appendChild(button);
+    frag.appendChild(li);
+
+    var aT = aP.map(function(oListItem, index) {
       var sLIlc = oListItem.toLowerCase();
-      var li = window.document.createElement('li');
+      var s = '<img src="images/50x50/' + sLIlc + '.png" alt="">' + oListItem;
+
       var button = window.document.createElement('button');
       var img = window.document.createElement('img');
-      var s = '<img src="images/50x50/' + sLIlc + '.png" alt="">' + oListItem;
-      var aButtonClasses = ['ctl-listitem-group'];
+      li = window.document.createElement('li');
 
-      button.setAttribute('data-button', oListItem);
+      button = window.document.createElement('button');
+      button.setAttribute('data-area', oListItem);
+      aButtonClasses = ['ctl-listitem-area'];
 
-      if (oGuessedTimeZone.parent.toLowerCase() === sLIlc) {
+      if (index === aP.length - 1) {
+        aButtonClasses.push('bl');
+        aButtonClasses.push('br');
+      }
+
+      if (oGuessedLocation.area.toLowerCase() === sLIlc) {
         aButtonClasses.push('active');
       }
 
       button.className = aButtonClasses.join(' ').trim();
 
+      img = window.document.createElement('img');
       img.src = 'images/50x50/' + sLIlc + '.png';
       img.alt = '';
 
@@ -69,98 +133,67 @@ var suiMoment = (function () {
       frag.appendChild(li);
       return s;
     });
-    eListGroups.appendChild(frag);
+    eListAreas.appendChild(frag);
   }
 
-  function createOptionsParent(aP) {
-    var div = document.querySelector('#parents'),
-      frag = document.createDocumentFragment(),
-      select = document.createElement('select');
-
-    select.options.add(new Option('-- Choose --', '--choose--', true, true)); // selected
-
-    sSelectedParent = '--choose--';
-
-    for (var i = 0; i < aP.length; i++) {
-      if (aP[i] !== oGuessedTimeZone.parent) {
-        select.options.add(new Option(aP[i], aP[i]));
-      } else {
-        sSelectedParent = aP[i];
-        select.options.add(new Option(aP[i], aP[i], true, true));
+  function deleteListItems(ele) {
+    // make sure you pass a UI element...
+    if (ele) {
+      while (ele.firstChild) {
+        ele.removeChild(ele.firstChild);
       }
     }
-
-    select.onchange = onInputParentChange;
-
-    frag.appendChild(select);
-    div.appendChild(frag);
   }
 
-  function doChildOptionsWork(select, aC, sSelectedParent, sSelectedChild) {
-    if (sSelectedParent !== '*') {
-      // filter list, then do stuff
-      var res = aC.filter(function (x) {
-        if (x.sZoneParent === sSelectedParent) {
+  function createListLocations(aP) {
+    deleteListItems(eListLocations);
+
+    var frag = window.document.createDocumentFragment();
+    var li = window.document.createElement('li');
+    var button = window.document.createElement('button');
+    var sLIlc;
+    var s;
+    var oNow = moment();
+    var res = [];
+
+    if (oGuessedLocation.isGuessed === true) {
+      res = aP.filter(function(x) {
+        if (x.sZoneParent === sSelectedArea) {
           return x;
         }
       });
-
-      for (var i = 0; i < res.length; i++) {
-        if (res[i].sZoneChild !== sSelectedChild) {
-          select.options.add(
-            new Option(res[i].sZoneChildUI, res[i].sZoneChild)
-          );
-        } else {
-          select.options.add(
-            new Option(res[i].sZoneChild, res[i].sZoneChildUI, true, true)
-          );
-        }
-      }
     } else {
-      for (var i = 0; i < aC.length; i++) {
-        if (aC[i] !== sSelectedParent) {
-          select.options.add(new Option(aC[i].sZoneChildUI, aC[i].sZoneChild));
-        } else {
-          select.options.add(
-            new Option(aC[i].sZoneChildUI, aC[i].sZoneChild, true, true)
-          );
-        }
-      }
-    }
-  }
-
-  function createListGroupTimeZones(aP) {
-    //  TODO
-    // for (var i = 0; i < aC.length; i++) {
-    //   if (aC[i] !== sSelectedParent) {
-    //     select.options.add(new Option(aC[i].sZoneChildUI, aC[i].sZoneChild));
-    //   } else {
-    //     select.options.add(
-    //       new Option(aC[i].sZoneChildUI, aC[i].sZoneChild, true, true)
-    //     );
-    //   }
-    // }
-
-    var sLIlc = sSelectedParent.toLocaleLowerCase();
-    var frag = window.document.createDocumentFragment();
-    var s = '<img src="images/50x50/' + sLIlc + '.png" alt="">' + sLIlc;
-    var oNow = moment();
-
-    var res = aP.filter(function (x) {
-      if (x.sZoneParent === sSelectedParent) {
+      res = aP.filter(function(x) {
         return x;
-      }
-    });
+      });
+    }
+
+    button = returnGeneratedButtonAll('ctl-listitem-location');
+    li.appendChild(button);
+    frag.appendChild(li);
 
     for (var i = 0; i < res.length; i++) {
-      var li = window.document.createElement('li');
-      var button = window.document.createElement('button');
+      li = window.document.createElement('li');
+      button = window.document.createElement('button');
       var img = window.document.createElement('img');
       var spanTitle = window.document.createElement('span');
       var spanAbout = window.document.createElement('span');
-      var aButtonClasses = ['ctl-listitem-timezone'];
+      var aButtonClasses = ['ctl-listitem-location'];
+      var sLIlc = res[i].sZoneParent.toLowerCase();
+      var s = '<img src="images/50x50/' + sLIlc + '.png" alt="">' + sLIlc;
 
-      button.setAttribute('data-button', res[i].sZoneChildUI);
+      if (i === res.length - 1) {
+        aButtonClasses.push('bl');
+        aButtonClasses.push('br');
+      }
+
+      if (sSelectedLocation.toLowerCase() === res[i].sZoneChild.toLowerCase()) {
+        aButtonClasses.push('active');
+      }
+
+      button.setAttribute('data-area', res[i].sZoneParent);
+      button.setAttribute('data-location', res[i].sZoneChild);
+      button.setAttribute('data-location-ui', res[i].sZoneChildUI);
       button.setAttribute('data-tzid', res[i].timeZoneId);
       button.className = aButtonClasses.join(' ').trim();
 
@@ -170,75 +203,49 @@ var suiMoment = (function () {
       spanTitle.setAttribute('class', 'tz-title');
       spanAbout.setAttribute('class', 'tz-detail');
 
-      spanTitle.appendChild(window.document.createTextNode(res[i].sZoneChildUI));
-      spanAbout.appendChild(window.document.createTextNode(oNow.tz(res[i].timeZoneId).format('hh:mm a') + ' (' + res[i].timeZoneLabel + ')'));
+      spanTitle.appendChild(
+        window.document.createTextNode(res[i].sZoneChildUI)
+      );
+      spanAbout.appendChild(
+        window.document.createTextNode(
+          oNow.tz(res[i].timeZoneId).format('hh:mm a') +
+            ' (' +
+            res[i].timeZoneLabel +
+            ')'
+        )
+      );
 
       button.appendChild(img);
       button.appendChild(spanTitle);
-      button.appendChild(spanAbout)
+      button.appendChild(spanAbout);
 
       li.appendChild(button);
       frag.appendChild(li);
     }
 
-
-    // var aT = aP.map(function (oListItem) {
-    //   console.log(oListItem)
-    //   var sLIlc = oListItem.toLowerCase();
-
-    //   if (oGuessedTimeZone.parent.toLowerCase() === sLIlc) {
-    //     aButtonClasses.push('active');
-    //   }
-
-    // });
-    eListTimezones.appendChild(frag);
-  }
-
-  function replaceOptionsChildren(aC, sSelectedParent, sSelectedChild) {
-    var div = document.querySelector('#children');
-
-    var select = div.getElementsByTagName('select');
-    select[0].options.length = 0;
-    //console.log(select[0])
-    doChildOptionsWork(select[0], aC, sSelectedParent, sSelectedChild);
-
-    //    frag.appendChild(select);
-    //    div.appendChild(frag);
-  }
-
-  function createOptionsChildren(aC, sSelectedParent, sSelectedChild) {
-    var div = document.querySelector('#children'),
-      frag = document.createDocumentFragment(),
-      select = document.createElement('select');
-
-    doChildOptionsWork(select, aC, sSelectedParent, sSelectedChild);
-
-    frag.appendChild(select);
-    div.appendChild(frag);
+    eListLocations.appendChild(frag);
   }
 
   function unpackTimeZones() {
-    aTimeZoneParents = aTimeZones
-      .map(function (s) {
+    aTimeZoneAreas = aTimeZones
+      .map(function(s) {
         if (s.indexOf('/') > -1) {
           var sZoneParent = s.substr(0, s.indexOf('/'));
 
-          if (typeof sZoneParent !== 'undefined') {
+          if (typeof sZoneParent != 'undefined') {
             if (sZoneParent.toLowerCase() !== 'etc') {
               return sZoneParent;
             }
           }
         }
       })
-      .filter(function (value, index, self) {
+      .filter(function(value, index, self) {
         return self.indexOf(value) === index;
       })
-      .filter(function (element) {
+      .filter(function(element) {
         return element !== undefined;
       })
       .sort();
-
-    //    console.log(aTimeZoneParents);
   }
 
   function returnZoneParent(s) {
@@ -268,21 +275,35 @@ var suiMoment = (function () {
   }
 
   function getAsyncTZs() {
-    //   console.log(aTimeZones.sort());
-    //  console.log(o);
-    console.log('a');
     unpackTimeZones();
+
     var other = '';
     var sGuess = moment.tz.guess();
 
-    oGuessedTimeZone = {
-      moment: sGuess,
-      parent: returnZoneParent(sGuess),
-      child: returnZoneChild(sGuess).raw
-    };
+    sSelectedArea = SELECTED_AREA;
+    sSelectedLocation = SELECTED_LOCATION;
 
-    setLabelArea(oGuessedTimeZone.parent);
-    setLabelLocation(oGuessedTimeZone.child);
+    if (typeof sGuess != 'undefined') {
+      oGuessedLocation = {
+        moment: sGuess,
+        area: returnZoneParent(sGuess),
+        location: returnZoneChild(sGuess).raw,
+        isGuessed: true
+      };
+
+      setLabelArea(oGuessedLocation.area);
+      setLabelLocation(oGuessedLocation.location);
+    } else {
+      oGuessedLocation = {
+        moment: sGuess,
+        area: sSelectedArea,
+        location: sSelectedLocation,
+        isGuessed: false
+      };
+
+      setLabelArea(sSelectedArea);
+      setLabelLocation(sSelectedLocation);
+    }
 
     var oZoneChildTemp;
     var sTimeZoneTemp;
@@ -305,19 +326,18 @@ var suiMoment = (function () {
       } // oZoneChildTemp.hasID === true
     }
 
-    offsetTmz.sort(function (a, b) {
+    offsetTmz.sort(function(a, b) {
       return a.timeZone - b.timeZone;
     });
 
-    console.log(offsetTmz);
-    createOptionsParent(aTimeZoneParents);
-    createListGroups(aTimeZoneParents);
-    createOptionsChildren(offsetTmz, sSelectedParent, oGuessedTimeZone.child);
-  }
-
-  function updateSelection(sParent, sChild) {
-    eTimezoneGroup.textContent = sParent;
-    eTimezoneSpecific = sChild;
+    //    console.log(offsetTmz);
+    async.waterfall([
+      waterfallEmpty,
+      createListAreas(aTimeZoneAreas),
+      createListLocations(offsetTmz),
+      addListeners(),
+      listenerClickLocations(eButtonsLocations)
+    ]);
   }
 
   function removeActiveFromButtons(ele) {
@@ -326,51 +346,167 @@ var suiMoment = (function () {
     }
   }
 
-  function onClickButtonGroup(event) {
-    var btnAttribute = this.getAttribute("data-button");
-    removeActiveFromButtons(eButtonsGroups);
-    event.target.classList.add('active');
-    sSelectedParent = btnAttribute;
-    updateSelection(sSelectedParent, '');
-    createListGroupTimeZones(offsetTmz);
-    eGroups.classList.add('hide');
-    eTimeZones.classList.remove('hide');
+  function addClassToClickedButton(ele, sClass) {
+    var eButton = ele;
+    var sNodeName = ele.nodeName.toLowerCase();
+    if (sNodeName !== 'button') {
+      eButton = ele.parentElement;
+    }
+    eButton.classList.add(sClass);
   }
 
-  function listenerClickGroups(ele) {
+  function onClickButtonArea(event) {
+    var btnAttribute = this.getAttribute('data-area');
+
+    setDefaultsForButtons();
+    removeListenerClickLocations(eButtonsLocations);
+
+    sSelectedArea = btnAttribute;
+    sSelectedLocation = SELECTED_LOCATION;
+
+    if (btnAttribute !== 'All') {
+      createListLocations(offsetTmz);
+    } else {
+      createListLocations(offsetTmz);
+    }
+
+    listenerClickLocations(eButtonsLocations);
+    setLabelArea(btnAttribute);
+    setLabelLocation(SELECTED_LOCATION);
+
+    async.waterfall([
+      waterfallEmpty,
+      removeActiveFromButtons(eButtonsAreas),
+      addClassToClickedButton(event.target, 'active')
+    ]);
+
+    eAreas.classList.add('hide');
+    eLocations.classList.remove('hide');
+  }
+
+  function setDefaultsForButtons() {
+    eSearchArea.value = '';
+    eSearchLocation.value = '';
+    eSearchAreaIcon.setAttribute('data-type', 'search');
+    eSearchLocationIcon.setAttribute('data-type', 'search');
+  }
+
+  function onClickButtonLocation(event) {
+    var attributeArea = this.getAttribute('data-area');
+    var attributeLocation = this.getAttribute('data-location');
+    var attributeLocationUI = this.getAttribute('data-location-ui');
+    var attributeIdentifier = this.getAttribute('data-tzid');
+    // todo
+    alert(attributeArea);
+    setDefaultsForButtons();
+    setLabelLocation(attributeLocationUI);
+
+    async.waterfall([
+      waterfallEmpty,
+      removeActiveFromButtons(eButtonsLocations),
+      addClassToClickedButton(event.target, 'active')
+    ]);
+  }
+
+  function onClickButtonSelectedArea(event) {
+    //  alert('here');
+    eAreas.classList.remove('hide');
+    eLocations.classList.add('hide');
+  }
+
+  function onClickButtonSelectedLocation(event) {
+    //  alert('there');
+    eAreas.classList.add('hide');
+    eLocations.classList.remove('hide');
+  }
+
+  function onClickButtonSearchAreaIcon(event) {
+    var sAttribute = event.target.getAttribute('data-type');
+    alert(sAttribute);
+    if (sAttribute === 'search') {
+      // call search
+    } else {
+      // call clear
+    }
+  }
+
+  function onClickButtonSearchLocationIcon(event) {
+    var sAttribute = event.target.getAttribute('data-type');
+    alert(sAttribute);
+    if (sAttribute === 'search') {
+      // call search
+    } else {
+      // call clear
+    }
+  }
+
+  function addStandardListeners() {
+    eTimezoneArea.addEventListener('click', onClickButtonSelectedArea, false);
+    eTimezoneLocation.addEventListener(
+      'click',
+      onClickButtonSelectedLocation,
+      false
+    );
+    eSearchAreaIcon.addEventListener(
+      'click',
+      onClickButtonSearchAreaIcon,
+      false
+    );
+    eSearchLocationIcon.addEventListener(
+      'click',
+      onClickButtonSearchLocationIcon,
+      false
+    );
+  }
+
+  function addListenerClickAreas(ele) {
     for (var i = 0; i < ele.length; i++) {
-      ele[i].addEventListener('click', onClickButtonGroup, false);
+      ele[i].addEventListener('click', onClickButtonArea, false);
+    }
+  }
+
+  function listenerClickLocations(ele) {
+    for (var i = 0; i < ele.length; i++) {
+      ele[i].addEventListener('click', onClickButtonLocation, false);
+    }
+  }
+
+  function removeListenerClickLocations(ele) {
+    for (var i = 0; i < ele.length; i++) {
+      ele[i].removeEventListener('click', onClickButtonLocation, false);
     }
   }
 
   function setLabelArea(sArea) {
-    eTimezoneGroup.textContent = sArea;
+    eTimezoneArea.textContent = sArea;
+    sSelectedArea = sArea;
   }
 
   function setLabelLocation(sLocation) {
-    eTimezoneSpecific.textContent = sLocation;
+    eTimezoneLocation.textContent = sLocation;
+    sSelectedLocation = sLocation;
   }
 
   function addListeners() {
-    console.log('b');
-    eButtonsGroups = window.document.getElementsByClassName(
-      'ctl-listitem-group'
+    eButtonsAreas = window.document.getElementsByClassName('ctl-listitem-area');
+    eButtonsLocations = window.document.getElementsByClassName(
+      'ctl-listitem-location'
     );
-    listenerClickGroups(eButtonsGroups);
+
+    addStandardListeners();
+    addListenerClickAreas(eButtonsAreas);
   }
 
   function init() {
-    setLabelArea(sSelectedParent);
-    setLabelLocation(sSelectedChild);
-
-    async.waterfall([addListeners, getAsyncTZs()], function (err, result) {
-      console.log('initialized...');
-    });
+    setLabelArea(sSelectedArea);
+    setLabelLocation(sSelectedLocation);
+    getAsyncTZs();
   }
 
   return {
     init: init,
-    filterListGroups: filterListGroups
+    filterListAreas: filterListAreas,
+    filterListLocations: filterListLocations
   };
 })();
 
