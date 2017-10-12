@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css" integrity="sha256-/Z28yXtfBv/6/alw+yZuODgTbKZm86IKbPE/5kjO/xY="
         crossorigin="anonymous" />
+    <link rel="stylesheet" href="../../node_modules/animate.css/animate.min.css" />
     <link rel="stylesheet" href="index.css" />
 </head>
 
@@ -27,11 +28,11 @@
             <div class="snuggle-date-time">
                 <div class="select-time-zone">
                     <div class="wrap-selection-buttons">
-                        <button id="timezone-area"></button>
+                        <button class="ui basic button ctl-tz" id="timezone-area"></button>
                         <span>/</span>
-                        <button id="timezone-location"></button>
+                        <button class="ui basic button ctl-tz" id="timezone-location"></button>
                     </div>
-                    <div id="areas" class="hide">
+                    <div id="areas" class="animated hide">
                         <div class="ui icon input search-areas">
                             <input id="search-area" onkeyup="myMoment.filterListAreas(event)" type="text" placeholder="Search Areas...">
                             <i id="search-area-icon" class="search link icon" role="button" aria-hidden="true" data-type="search"></i>
@@ -42,7 +43,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div id="locations" class="hide">
+                    <div id="locations" class="animated hide">
                         <div class="ui icon input search-locations">
                             <input id="search-location" onkeyup="myMoment.filterListLocations(event)" type="text" placeholder="Search Locations...">
                             <i id="search-location-icon" class="search link icon" role="button" aria-hidden="true" data-type="search"></i>

@@ -19,20 +19,69 @@ var suiMoment = (function() {
   var aTimeZones = moment.tz.names();
   var aTimeZoneAreas = [];
   var oGuessedLocation = {};
-  var sSelectedArea = SELECTED_AREA;
-  var sSelectedLocation = SELECTED_LOCATION;
+  var sSelectedMomentId = '';
+  var oSelected = {
+    area: SELECTED_AREA,
+    location: SELECTED_LOCATION,
+    moment: ''
+  };
   var offsetTmz = [];
 
   function waterfallEmpty() {}
+
+  function animateAreaIn() {
+    eAreas.classList.remove('zoomOut');
+    eAreas.classList.add('zoomIn');
+  }
+
+  function animateAreaOut() {
+    eAreas.classList.remove('zoomIn');
+    eAreas.classList.add('zoomOut');
+  }
+
+  function animateLocationIn() {
+    eLocations.classList.remove('zoomOut');
+    eLocations.classList.add('zoomIn');
+  }
+
+  function animateLocationOut() {
+    eLocations.classList.remove('zoomIn');
+    eLocations.classList.add('zoomOut');
+  }
+
+  function outputPointyEnd(sFromWhere) {
+    console.log('From Where:', sFromWhere);
+    console.log('selected', oSelected);
+  }
+
+  function filterListOff(eList, eSearch, eIcon) {
+    // todo
+
+    var li = eList.getElementsByTagName('li');
+
+    for (i = 0; i < li.length; i++) {
+      li[i].style.display = '';
+    }
+
+    eSearch.value = '';
+
+    eIcon.classList.remove('close');
+    eIcon.classList.add('search');
+    eIcon.setAttribute('data-type', 'search');
+  }
 
   function filterListAreas(e) {
     filter = e.target.value.toLowerCase();
     if (filter !== '') {
       eSearchAreaIcon.classList.remove('search');
       eSearchAreaIcon.classList.add('close');
-      eSearchAreaIcon.setAttribute('data-search', 'clear');
+      eSearchAreaIcon.setAttribute('data-type', 'clear');
+    } else {
+      eSearchAreaIcon.classList.remove('close');
+      eSearchAreaIcon.classList.add('search');
+      eSearchAreaIcon.setAttribute('data-type', 'search');
     }
-    li = eListAreas.getElementsByTagName('li');
+    var li = eListAreas.getElementsByTagName('li');
     var button, sData;
 
     // Loop through all list items, and hide those who don't match the search query
@@ -53,7 +102,11 @@ var suiMoment = (function() {
     if (filter !== '') {
       eSearchLocationIcon.classList.remove('search');
       eSearchLocationIcon.classList.add('close');
-      eSearchLocationIcon.setAttribute('data-search', 'clear');
+      eSearchLocationIcon.setAttribute('data-type', 'clear');
+    } else {
+      eSearchLocationIcon.classList.remove('close');
+      eSearchLocationIcon.classList.add('search');
+      eSearchLocationIcon.setAttribute('data-type', 'search');
     }
     li = eListLocations.getElementsByTagName('li');
     var button, sData;
@@ -61,6 +114,7 @@ var suiMoment = (function() {
     // Loop through all list items, and hide those who don't match the search query
     for (i = 0; i < li.length; i++) {
       button = li[i].getElementsByTagName('button')[0];
+
       sData = button.getAttribute('data-location-ui').toLowerCase();
 
       if (sData.indexOf(filter) > -1) {
@@ -72,21 +126,45 @@ var suiMoment = (function() {
   }
 
   function returnGeneratedButtonAll(sType) {
+    // todo
     var button = window.document.createElement('button');
     var img = window.document.createElement('img');
-    var aButtonClasses = [sType];
+    var sMainClass = '';
 
-    aButtonClasses.push('tl');
-    aButtonClasses.push('tr');
+    if (sType === 'location-area') {
+      sMainClass = 'ctl-listitem-location';
+      button.setAttribute('data-location-ui', 'All Areas...');
+      button.setAttribute('data-area', 'All Areas');
+    } else if (sType === 'location-location') {
+      sMainClass = 'ctl-listitem-location';
+      button.setAttribute('data-location-ui', 'All Locations...');
+      button.setAttribute('data-area', 'All Locations');
+    } else {
+      sMainClass = 'ctl-listitem-area';
+      button.setAttribute('data-area', 'All Locations');
+    }
+
+    var aButtonClasses = [sMainClass];
+
+    if (sType !== 'location-location') {
+      aButtonClasses.push('tl');
+      aButtonClasses.push('tr');
+    }
 
     button.className = aButtonClasses.join(' ').trim();
-    button.setAttribute('data-area', 'All');
 
     img.src = 'images/50x50/etc.png';
     img.alt = '';
 
     button.appendChild(img);
-    button.appendChild(window.document.createTextNode('All'));
+
+    if (sType === 'location-area') {
+      button.appendChild(window.document.createTextNode('All Areas...'));
+    } else if (sType === 'location-location') {
+      button.appendChild(window.document.createTextNode('All Locations...'));
+    } else {
+      button.appendChild(window.document.createTextNode('All Locations...'));
+    }
 
     return button;
   }
@@ -95,7 +173,7 @@ var suiMoment = (function() {
     var frag = window.document.createDocumentFragment();
     var li = window.document.createElement('li');
 
-    button = returnGeneratedButtonAll('ctl-listitem-area');
+    button = returnGeneratedButtonAll('area');
     li.appendChild(button);
     frag.appendChild(li);
 
@@ -145,20 +223,24 @@ var suiMoment = (function() {
     }
   }
 
-  function createListLocations(aP) {
+  function createListLocations(aP, bForceAll) {
     deleteListItems(eListLocations);
 
     var frag = window.document.createDocumentFragment();
     var li = window.document.createElement('li');
     var button = window.document.createElement('button');
+    var liArea = window.document.createElement('li');
+    var liLocation = window.document.createElement('li');
+    var buttonArea = window.document.createElement('button');
+    var buttonLocation = window.document.createElement('button');
     var sLIlc;
     var s;
     var oNow = moment();
     var res = [];
 
-    if (oGuessedLocation.isGuessed === true) {
+    if (oGuessedLocation.isGuessed === true && bForceAll === false) {
       res = aP.filter(function(x) {
-        if (x.sZoneParent === sSelectedArea) {
+        if (x.sZoneParent === oSelected.area) {
           return x;
         }
       });
@@ -168,9 +250,13 @@ var suiMoment = (function() {
       });
     }
 
-    button = returnGeneratedButtonAll('ctl-listitem-location');
-    li.appendChild(button);
-    frag.appendChild(li);
+    buttonArea = returnGeneratedButtonAll('location-area');
+    buttonLocation = returnGeneratedButtonAll('location-location');
+
+    liArea.appendChild(buttonArea);
+    frag.appendChild(liArea);
+    liLocation.appendChild(buttonLocation);
+    frag.appendChild(liLocation);
 
     for (var i = 0; i < res.length; i++) {
       li = window.document.createElement('li');
@@ -187,7 +273,9 @@ var suiMoment = (function() {
         aButtonClasses.push('br');
       }
 
-      if (sSelectedLocation.toLowerCase() === res[i].sZoneChild.toLowerCase()) {
+      if (
+        oSelected.location.toLowerCase() === res[i].sZoneChild.toLowerCase()
+      ) {
         aButtonClasses.push('active');
       }
 
@@ -280,8 +368,8 @@ var suiMoment = (function() {
     var other = '';
     var sGuess = moment.tz.guess();
 
-    sSelectedArea = SELECTED_AREA;
-    sSelectedLocation = SELECTED_LOCATION;
+    oSelected.area = SELECTED_AREA;
+    oSelected.location = SELECTED_LOCATION;
 
     if (typeof sGuess != 'undefined') {
       oGuessedLocation = {
@@ -293,16 +381,17 @@ var suiMoment = (function() {
 
       setLabelArea(oGuessedLocation.area);
       setLabelLocation(oGuessedLocation.location);
+      oSelected.moment = sGuess;
     } else {
       oGuessedLocation = {
         moment: sGuess,
-        area: sSelectedArea,
-        location: sSelectedLocation,
+        area: oSelected.area,
+        location: oSelected.location,
         isGuessed: false
       };
 
-      setLabelArea(sSelectedArea);
-      setLabelLocation(sSelectedLocation);
+      setLabelArea(oSelected.area);
+      setLabelLocation(oSelected.location);
     }
 
     var oZoneChildTemp;
@@ -321,7 +410,7 @@ var suiMoment = (function() {
           timeZoneId: aTimeZones[i],
           timeZone: sTimeZoneTemp,
           timeZoneAbbreviation: moment.tz(aTimeZones[i]).format('z'),
-          timeZoneLabel: 'GMT' + sTimeZoneTemp
+          timeZoneLabel: 'GMT' + sTimeZoneTemp.toString()
         });
       } // oZoneChildTemp.hasID === true
     }
@@ -334,7 +423,7 @@ var suiMoment = (function() {
     async.waterfall([
       waterfallEmpty,
       createListAreas(aTimeZoneAreas),
-      createListLocations(offsetTmz),
+      createListLocations(offsetTmz, false),
       addListeners(),
       listenerClickLocations(eButtonsLocations)
     ]);
@@ -356,18 +445,20 @@ var suiMoment = (function() {
   }
 
   function onClickButtonArea(event) {
+    // todo
     var btnAttribute = this.getAttribute('data-area');
 
     setDefaultsForButtons();
     removeListenerClickLocations(eButtonsLocations);
 
-    sSelectedArea = btnAttribute;
-    sSelectedLocation = SELECTED_LOCATION;
+    oSelected.area = btnAttribute;
+    oSelected.location = SELECTED_LOCATION;
+    oSelected.moment = '';
 
-    if (btnAttribute !== 'All') {
-      createListLocations(offsetTmz);
+    if (btnAttribute !== 'All Locations') {
+      createListLocations(offsetTmz, false);
     } else {
-      createListLocations(offsetTmz);
+      createListLocations(offsetTmz, true);
     }
 
     listenerClickLocations(eButtonsLocations);
@@ -380,8 +471,17 @@ var suiMoment = (function() {
       addClassToClickedButton(event.target, 'active')
     ]);
 
-    eAreas.classList.add('hide');
-    eLocations.classList.remove('hide');
+    async.waterfall([
+      waterfallEmpty,
+      animateAreaOut(),
+      setTimeout(function() {
+        eAreas.classList.add('hide');
+        eLocations.classList.remove('hide');
+        animateLocationIn();
+      }, 400)
+    ]);
+
+    outputPointyEnd(onClickButtonArea.name);
   }
 
   function setDefaultsForButtons() {
@@ -391,52 +491,137 @@ var suiMoment = (function() {
     eSearchLocationIcon.setAttribute('data-type', 'search');
   }
 
+  function setMomentInTime(sId) {
+    oSelected.moment = sId;
+  }
+
   function onClickButtonLocation(event) {
     var attributeArea = this.getAttribute('data-area');
     var attributeLocation = this.getAttribute('data-location');
     var attributeLocationUI = this.getAttribute('data-location-ui');
     var attributeIdentifier = this.getAttribute('data-tzid');
     // todo
-    alert(attributeArea);
+
     setDefaultsForButtons();
-    setLabelLocation(attributeLocationUI);
 
     async.waterfall([
       waterfallEmpty,
       removeActiveFromButtons(eButtonsLocations),
       addClassToClickedButton(event.target, 'active')
     ]);
+    // what happens when all areas is selected
+    // what happens when all locations is selected
+    // what happens when a location is selected
+    if (attributeArea === 'All Areas') {
+      //  eAreas.classList.remove('hide');
+      //  eLocations.classList.add('hide');
+
+      async.waterfall([
+        waterfallEmpty,
+        animateLocationOut(),
+        setTimeout(function() {
+          eAreas.classList.remove('hide');
+          eLocations.classList.add('hide');
+          animateAreaIn();
+        }, 400)
+      ]);
+
+      setLabelArea(SELECTED_AREA);
+      setLabelLocation(SELECTED_LOCATION);
+      removeActiveFromButtons(eButtonsAreas);
+      removeActiveFromButtons(eButtonsLocations);
+      oSelected.moment = '';
+    } else if (attributeArea === 'All Locations') {
+      setLabelArea(SELECTED_AREA);
+      setLabelLocation(SELECTED_LOCATION);
+      oSelected.moment = '';
+
+      async.waterfall([
+        waterfallEmpty,
+        removeActiveFromButtons(eButtonsAreas),
+        removeActiveFromButtons(eButtonsLocations),
+        removeListenerClickLocations(eButtonsLocations),
+        createListLocations(offsetTmz, true),
+        listenerClickLocations(eButtonsLocations)
+      ]);
+    } else {
+      setLabelArea(attributeArea);
+      setLabelLocation(attributeLocationUI);
+      //  eAreas.classList.add('hide');
+      //  eLocations.classList.add('hide');
+      async.waterfall([
+        waterfallEmpty,
+        animateLocationOut(),
+        setTimeout(function() {
+          //   eAreas.classList.remove('hide');
+          eLocations.classList.add('hide');
+          //   animateAreaIn();
+        }, 400)
+      ]);
+      setMomentInTime(attributeIdentifier);
+    }
+
+    outputPointyEnd(onClickButtonLocation.name);
   }
 
   function onClickButtonSelectedArea(event) {
-    //  alert('here');
-    eAreas.classList.remove('hide');
-    eLocations.classList.add('hide');
+    //  eAreas.classList.remove('hide');
+    //  eLocations.classList.add('hide');
+    if (eLocations.classList.contains('hide')) {
+      animateAreaIn();
+      eAreas.classList.remove('hide');
+    } else {
+      async.waterfall([
+        waterfallEmpty,
+        animateLocationOut(),
+        setTimeout(function() {
+          eLocations.classList.add('hide');
+          eAreas.classList.remove('hide');
+          animateAreaIn();
+        }, 400)
+      ]);
+    }
+
+    outputPointyEnd(onClickButtonSelectedArea.name);
   }
 
   function onClickButtonSelectedLocation(event) {
-    //  alert('there');
-    eAreas.classList.add('hide');
-    eLocations.classList.remove('hide');
+    //  eAreas.classList.add('hide');
+    //  eLocations.classList.remove('hide');
+    if (eAreas.classList.contains('hide')) {
+      animateLocationIn();
+      eLocations.classList.remove('hide');
+    } else {
+      async.waterfall([
+        waterfallEmpty,
+        animateAreaOut(),
+        setTimeout(function() {
+          eAreas.classList.add('hide');
+          eLocations.classList.remove('hide');
+          animateLocationIn();
+        }, 400)
+      ]);
+    }
+
+    outputPointyEnd(onClickButtonSelectedLocation.name);
   }
 
   function onClickButtonSearchAreaIcon(event) {
     var sAttribute = event.target.getAttribute('data-type');
-    alert(sAttribute);
+    // todo
     if (sAttribute === 'search') {
       // call search
     } else {
-      // call clear
+      filterListOff(eListAreas, eSearchArea, eSearchAreaIcon);
     }
   }
 
   function onClickButtonSearchLocationIcon(event) {
     var sAttribute = event.target.getAttribute('data-type');
-    alert(sAttribute);
     if (sAttribute === 'search') {
       // call search
     } else {
-      // call clear
+      filterListOff(eListLocations, eSearchLocation, eSearchLocationIcon);
     }
   }
 
@@ -479,12 +664,12 @@ var suiMoment = (function() {
 
   function setLabelArea(sArea) {
     eTimezoneArea.textContent = sArea;
-    sSelectedArea = sArea;
+    oSelected.area = sArea;
   }
 
   function setLabelLocation(sLocation) {
     eTimezoneLocation.textContent = sLocation;
-    sSelectedLocation = sLocation;
+    oSelected.location = sLocation;
   }
 
   function addListeners() {
@@ -498,8 +683,8 @@ var suiMoment = (function() {
   }
 
   function init() {
-    setLabelArea(sSelectedArea);
-    setLabelLocation(sSelectedLocation);
+    setLabelArea(oSelected.area);
+    setLabelLocation(oSelected.location);
     getAsyncTZs();
   }
 
