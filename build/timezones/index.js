@@ -115,7 +115,7 @@ var suiMoment = (function() {
     for (i = 0; i < li.length; i++) {
       button = li[i].getElementsByTagName('button')[0];
 
-      sData = button.getAttribute('data-location-ui').toLowerCase();
+      sData = button.getAttribute('data-search').toLowerCase();
 
       if (sData.indexOf(filter) > -1) {
         li[i].style.display = '';
@@ -135,10 +135,12 @@ var suiMoment = (function() {
       sMainClass = 'ctl-listitem-location';
       button.setAttribute('data-location-ui', 'All Areas...');
       button.setAttribute('data-area', 'All Areas');
+      button.setAttribute('data-search', 'All Areas');
     } else if (sType === 'location-location') {
       sMainClass = 'ctl-listitem-location';
       button.setAttribute('data-location-ui', 'All Locations...');
       button.setAttribute('data-area', 'All Locations');
+      button.setAttribute('data-search', 'All Locations');
     } else {
       sMainClass = 'ctl-listitem-area';
       button.setAttribute('data-area', 'All Locations');
@@ -259,6 +261,11 @@ var suiMoment = (function() {
     frag.appendChild(liLocation);
 
     for (var i = 0; i < res.length; i++) {
+
+      if (res[i].sZoneParent.toLowerCase() === 'etc') {
+        continue;
+      }
+
       li = window.document.createElement('li');
       button = window.document.createElement('button');
       var img = window.document.createElement('img');
@@ -283,6 +290,7 @@ var suiMoment = (function() {
       button.setAttribute('data-location', res[i].sZoneChild);
       button.setAttribute('data-location-ui', res[i].sZoneChildUI);
       button.setAttribute('data-tzid', res[i].timeZoneId);
+      button.setAttribute('data-search', res[i].locationSearchString);
       button.className = aButtonClasses.join(' ').trim();
 
       img.src = 'images/50x50/' + sLIlc + '.png';
@@ -410,7 +418,8 @@ var suiMoment = (function() {
           timeZoneId: aTimeZones[i],
           timeZone: sTimeZoneTemp,
           timeZoneAbbreviation: moment.tz(aTimeZones[i]).format('z'),
-          timeZoneLabel: 'GMT' + sTimeZoneTemp.toString()
+          timeZoneLabel: 'GMT' + sTimeZoneTemp.toString(),
+          locationSearchString: oZoneChildTemp.formatted + 'GMT' + sTimeZoneTemp.toString()
         });
       } // oZoneChildTemp.hasID === true
     }
@@ -582,6 +591,11 @@ var suiMoment = (function() {
       ]);
     }
 
+    // Clean Up:
+    filterListOff(eListAreas, eSearchArea, eSearchAreaIcon);
+    filterListOff(eListLocations, eSearchLocation, eSearchLocationIcon);
+
+    // Debug:
     outputPointyEnd(onClickButtonSelectedArea.name);
   }
 
@@ -603,6 +617,11 @@ var suiMoment = (function() {
       ]);
     }
 
+    // Clean Up:
+    filterListOff(eListAreas, eSearchArea, eSearchAreaIcon);
+    filterListOff(eListLocations, eSearchLocation, eSearchLocationIcon);
+
+    // Debug:
     outputPointyEnd(onClickButtonSelectedLocation.name);
   }
 
