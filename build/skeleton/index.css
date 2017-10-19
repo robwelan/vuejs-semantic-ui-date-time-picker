@@ -1,0 +1,144 @@
+.contain-date-time,
+.contain-date-time div,
+.contain-date-time button {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.contain-date-time {
+  height: 100%;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.snuggle-date-time {
+  height: 100%;
+  width: 100%;
+  max-height: 543px;
+  max-width: 310px;
+  margin-bottom: 5px;
+  border: 1px solid white;
+  border-radius: 0.28571429rem;
+  -webkit-box-shadow: 0 10px 6px -6px #7f7e7e;
+  box-shadow: 0 10px 6px -6px #7f7e7e;
+  background: white;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+.control-panel-wrapper {
+  display: flex;
+  width: 620px;
+  height: 100%;
+}
+.control-panel-wrapper .col {
+  flex: 1;
+}
+.control-panel-main {
+  width: 100%;
+}
+
+.widget-sub-controllers {
+  height: 100%;
+  max-height: calc(100% - 48px);
+}
+.controllers-top {
+  padding: 5px;
+  margin-bottom: 5px;
+  height: 70px;
+}
+.controllers-top .wrap-buttons {
+  height: 38px;
+}
+.controllers-top-other {
+  padding: 5px;
+  margin-bottom: 5px;
+  height: 47px;
+}
+.controllers-bottom {
+  position: relative;
+  z-index: 10;
+  bottom: 13px;
+}
+
+.hide,
+.controllers-bottom.hide,
+.control-panel-other.hide {
+  display: none;
+}
+
+.slideup,
+.controllers-bottom.slideup {
+  animation: 1s slide-up;
+  margin-top: -103px;
+}
+.slidedown,
+.controllers-bottom.slidedown {
+  animation: 1s slide-down;
+  margin-top: 24px;
+}
+.control-panel-slideleft {
+  animation: 1s controlpanelslideleft;
+  margin-left: -312px;
+}
+.control-panel-slideright {
+  animation: 1s controlpanelslideright;
+  left: 0;
+}
+@keyframes slide-up {
+  from {
+    margin-top: 24px;
+    height: 89px;
+  }
+
+  to {
+    margin-top: -103px;
+    height: 89px;
+  }
+}
+@keyframes slide-down {
+  from {
+    margin-top: -103px;
+    height: 89px;
+  }
+
+  to {
+    margin-top: 24px;
+    height: 89px;
+  }
+}
+@keyframes controlpanelslideleft {
+  from {
+    margin-left: 0;
+  }
+  to {
+    margin-left: -310px;
+  }
+}
+@keyframes controlpanelslideright {
+  from {
+    margin-left: -310px;
+  }
+  to {
+    margin-left: 0;
+  }
+}
+
+/* colors */
+.controllers-top,
+.controllers-top-other {
+  background-color: rgba(100, 100, 100, 0.1);
+}

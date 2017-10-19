@@ -11,6 +11,9 @@
   "dependencies": {
     "animate.css": "^3.5.2",
     "async": "^2.5.0",
+    "moment": "^2.19.1",
+    "moment-timezone": "^0.5.13",
+    "semantic-ui": "^2.2.13",
     "vue": "^2.3.3"
   },
   "devDependencies": {
