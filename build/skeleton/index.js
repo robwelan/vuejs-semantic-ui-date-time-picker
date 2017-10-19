@@ -5,7 +5,6 @@ widgetDateTime = (function() {
   var eCloseTimezone;
   var eSave;
   var eControlPanelContainer;
-  var eControlPanelMain;
   var eControlPanelCalendar;
   var eControlPanelTime;
   var eShowDate;
@@ -81,7 +80,7 @@ widgetDateTime = (function() {
     });
   }
 
-  function writeShortDate() {
+  function defaultShortDateString() {
     var language = [window.navigator.userLanguage || window.navigator.language];
     var date = new Date(),
       options = {
@@ -90,11 +89,15 @@ widgetDateTime = (function() {
         month: 'short',
         day: 'numeric'
       };
-    // console.log(date.toLocaleDateString(language, options));
-    eShowDateLabel.textContent = date.toLocaleDateString(language, options);
+    return date.toLocaleDateString(language, options);
   }
 
-  function writeShortTime() {
+  function writeShortDate(s) {
+    // console.log(date.toLocaleDateString(language, options));
+    eShowDateLabel.textContent = s;
+  }
+
+  function defaultShortTimeString() {
     var date = new Date();
     // getHours returns the hours in local time zone from 0 to 23
     var hours = date.getHours();
@@ -116,21 +119,30 @@ widgetDateTime = (function() {
       minutes = '0' + minutes.toString();
     }
     s = hours + ':' + minutes + meridiem;
+
+    return s;
+  }
+
+  function writeShortTime(s) {
     eShowTimeLabel.textContent = s;
   }
 
-  function writeTimezone() {
-    eShowTimezoneLabel.textContent = sTimezoneGuess;
+  function defaultTimezone() {
+    var s = sTimezoneGuess;
+
+    return s;
+  }
+  function writeTimezone(s) {
+    eShowTimezoneLabel.textContent = s;
   }
 
-  function init() {
+  function initializeElements() {
     eClose = getElement('ctl-close');
     eCloseCalendar = getElement('ctl-close-calendar');
     eCloseTime = getElement('ctl-close-time');
     eCloseTimezone = getElement('ctl-close-timezone');
     eSave = getElement('ctl-save');
     eControlPanelContainer = getElement('control-panel-container');
-    eControlPanelMain = getElement('control-panel-main');
     eControlPanelCalendar = getElement('control-panel-calendar');
     eControlPanelTime = getElement('control-panel-time');
     eControlPanelTimezone = getElement('control-panel-timezone');
@@ -143,9 +155,13 @@ widgetDateTime = (function() {
     eDiscard = getElement('card-check-discard');
     eDestroy = getElement('ctl-destroy');
     eKeepEditing = getElement('ctl-keep-editing');
-    writeShortDate();
-    writeShortTime();
-    writeTimezone();
+  }
+
+  function init() {
+    initializeElements();
+    writeShortDate(defaultShortDateString());
+    writeShortTime(defaultShortTimeString());
+    writeTimezone(defaultTimezone());
     addEventListeners();
   }
 
