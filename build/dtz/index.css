@@ -1,9 +1,43 @@
+/* normalising things  - start*/
+div.calendar input[type='button'],
+div.calendar input[type='submit'],
+div.calendar input[type='reset'],
+div.calendar input[type='file']::-webkit-file-upload-button,
+div.calendar button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+div.calendar input[type='number']::-webkit-inner-spin-button,
+div.calendar input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+div.calendar input:focus,
+div.calendar button:focus {
+  outline: none;
+}
+
 .contain-date-time,
 .contain-date-time div,
 .contain-date-time button {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
+
+.ctl-ym i,
+.ctl-hmsm i,
+label .icon {
+  margin: 0;
+  padding: 0;
+}
+
+label .icon {
+  font-size: 8px;
+}
+/* normalising things - finish */
 
 .contain-date-time {
   height: 100%;
@@ -31,14 +65,13 @@
   max-height: 543px;
   max-width: 310px;
   margin-bottom: 5px;
-  border: 1px solid white;
+  border: 1px solid;
   border-radius: 0.28571429rem;
-  -webkit-box-shadow: 0 10px 6px -6px #7f7e7e;
-  box-shadow: 0 10px 6px -6px #7f7e7e;
-  background: white;
   overflow-x: hidden;
   overflow-y: hidden;
 }
+
+/* Control Panel - Start */
 .control-panel-wrapper {
   display: flex;
   width: 620px;
@@ -137,9 +170,211 @@
     margin-left: 0;
   }
 }
+/* Control Panel - End */
 
-/* colors */
+/* Calendar / Clock - Start */
+.calendar-row,
+.clock-row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-flow: row;
+  flex-flow: row;
+  width: 100%;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.contain-calendar-days {
+  padding-top: 7px;
+}
+
+.calendar-row.year {
+  padding-top: 7px;
+}
+
+.calendar-row.month {
+  margin-top: -1px;
+  padding-bottom: 7px;
+}
+
+/* calendar and clock control heights */
+
+.ctl-today,
+.ctl-ym,
+.ipt-ym,
+.day-label,
+.ctl-day,
+.ipt-time,
+.ctl-hmsm,
+.ctl-ampm {
+  min-height: 42px;
+  height: 42px;
+}
+
+.calendar-row > .ctl-day.top {
+  border-top: 1px solid;
+}
+.calendar-row > .ctl-day.left {
+  border-left: 1px solid;
+}
+.calendar-row > .ctl-day.right {
+  border-right: 1px solid;
+}
+.calendar-row > .ctl-day.bottom {
+  border-bottom: 1px solid;
+}
+/* calendar and clock control widths */
+.ctl-today {
+  width: 100%;
+}
+
+.ctl-ym,
+.day-label,
+.ctl-day,
+.ctl-hmsm,
+.ctl-ampm {
+  min-width: 42px;
+  width: 42px;
+}
+
+.day-label.left {
+  border-top-left-radius: 0.28571429rem;
+  border-bottom-left-radius: 0.28571429rem;
+}
+
+.day-label.right {
+  border-top-right-radius: 0.28571429rem;
+  border-bottom-right-radius: 0.28571429rem;
+}
+
+.ctl-today,
+.ctl-ym,
+.ctl-day,
+.ctl-hmsm,
+.ctl-ampm {
+  display: block;
+  cursor: pointer;
+  background: transparent;
+}
+
+.ctl-today.special {
+  margin-top: 7px;
+  margin-bottom: 7px;
+  border: 1px solid;
+  border-radius: 0.28571429rem;
+}
+
+.ipt-ym,
+.ipt-time {
+  width: 100%;
+  text-align: center;
+  border: 1px solid;
+  background: #fff;
+}
+
+.day-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+/* calendar and clock control borders */
+.btlr {
+  border-top-left-radius: 0.28571429rem;
+}
+.btrr {
+  border-top-right-radius: 0.28571429rem;
+}
+.bblr {
+  border-bottom-left-radius: 0.28571429rem;
+}
+.bbrr {
+  border-bottom-right-radius: 0.28571429rem;
+}
+
+.ctl-ym.left,
+.ctl-hmsm.left,
+.ctl-ampm.left {
+  border-top: 1px solid;
+  border-left: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.ctl-ym.right,
+.ctl-hmsm.right,
+.ctl-ampm.right {
+  border-top: 1px solid;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.ctl-ampm.right {
+  border-left: 1px solid;
+}
+
+/* Calendar / Clock - End */
+
+/* COLORS */
+/* Colors: Control Panel - Start */
 .controllers-top,
 .controllers-top-other {
   background-color: rgba(100, 100, 100, 0.1);
 }
+
+.snuggle-date-time {
+  border-color: white;
+  background-color: white;
+  -webkit-box-shadow: 0 10px 6px -6px #7f7e7e;
+  box-shadow: 0 10px 6px -6px #7f7e7e;
+}
+/* Colors: Control Panel - End */
+
+/* Colors: Calendar / Clock - Start */
+.day-label {
+  background-color: rgba(100, 100, 100, 0.1);
+}
+.ctl-day.mute {
+  color: #797979;
+}
+
+.ctl-today.special,
+.ctl-ym.left,
+.ctl-ym.right,
+.ipt-ym,
+.ctl-hmsm.left,
+.ctl-hmsm.right,
+.ctl-ampm.left,
+.ctl-ampm.right,
+.ipt-time,
+.calendar-row > .ctl-day.top,
+.calendar-row > .ctl-day.left,
+.calendar-row > .ctl-day.right,
+.calendar-row > .ctl-day.bottom {
+  border-color: rgb(162, 160, 160);
+}
+
+.ctl-today:focus,
+.ctl-ym:focus,
+.ctl-day:focus,
+.ctl-hmsm:focus,
+.ctl-ampm:focus {
+  background-color: rgb(162, 160, 160);
+}
+
+.ctl-today:active,
+.ctl-today.active,
+.ctl-ym:active,
+.ctl-ym.active,
+.ctl-day:active,
+.ctl-day.active,
+.ctl-hmsm:active,
+.ctl-hmsm.active,
+.ctl-ampm:active,
+.ctl-ampm.active {
+  background-color: #464646;
+  color: #fff;
+}
+/* Colors: Calendar / Clock - End */

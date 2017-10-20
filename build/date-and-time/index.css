@@ -42,14 +42,14 @@ div.clock button:focus {
   outline: none;
 }
 
-/* normalising things */
-
 .contain-date-time,
 .contain-date-time div,
 .contain-date-time button {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
+
+/* normalising things - finish */
 
 .contain-date-time {
   height: 100%;

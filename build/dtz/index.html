@@ -68,7 +68,7 @@
                             <div class="content">
                                 <p>Are you sure you want to discard?</p>
                                 <button id="ctl-control-panel-destroy" class="ui basic button">
-                                    <i class="exclamation-triangle icon"></i>
+                                    <i class="exclamation triangle icon"></i>
                                     Discard
                                 </button>
                                 <button id="ctl-control-panel-keep-editing" class="ui basic button">
@@ -82,23 +82,56 @@
                             <div class="controllers-top-other">
                                 <div id="ctl-control-panel-close-calendar" class="ui labeled left floated button" tabindex="0">
                                     <div class="ui button">
-                                        <i class="chevron right icon"></i>
+                                        <i class="chevron left icon"></i>
                                     </div>
                                     <a class="ui basic label">
-                                        Enter date.
+                                        Enter date and return.
                                     </a>
                                 </div>
                             </div>
-                            calendar
+                            <div class="calendar">
+                                <div class="calendar-row year">
+                                    <button class="ctl-ym left btlr" type="button" aria-label="decrease year" onclick="widgetDateTimeZone.controlYear(event, '<')">
+                                        <i class="angle double left icon"></i>
+                                    </button>
+
+                                    <input id="input-year" class="ipt-ym" type="number" placeholder="year" value="" aria-label="year" min="1900" onblur="widgetDateTimeZone.directBlurYear(event)">
+
+                                    <button class="ctl-ym right btrr" type="button" aria-label="increase year" onclick="widgetDateTimeZone.controlYear(event, '>')">
+                                        <i class="angle double right icon"></i>
+                                    </button>
+                                </div>
+                                <div class="calendar-row month">
+                                    <button class="ctl-ym left bblr" type="button" aria-label="decrease month" onclick="widgetDateTimeZone.controlMonth(event, '<')">
+                                        <i class="angle left icon"></i>
+                                    </button>
+
+                                    <input id="input-month" class="ipt-ym" type="number" placeholder="month" value="" aria-label="month" min="0" onblur="widgetDateTimeZone.directBlurMonth(event)">
+
+                                    <button class="ctl-ym right bbrr" type="button" aria-label="increase month" onclick="widgetDateTimeZone.controlMonth(event, '>')">
+                                        <i class="angle right icon"></i>
+                                    </button>
+                                </div>
+                                <!-- day labels -->
+                                <div class="calendar-row" id="label-days"></div>
+                                <!-- contain calendar days -->
+                                <div id="calendar-days" class="contain-calendar-days"></div>
+                                <!-- go to today -->
+                                <div class="calendar-row">
+                                    <button class="ctl-today special" type="button" aria-label="today" onclick="widgetDateTimeZone.setToday()">
+                                        Today
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div id="control-panel-time" class="control-panel-other hide">
                             <div class="controllers-top-other">
                                 <div id="ctl-control-panel-close-time" class="ui labeled left floated button" tabindex="0">
                                     <div class="ui button">
-                                        <i class="chevron right icon"></i>
+                                        <i class="chevron left icon"></i>
                                     </div>
                                     <a class="ui basic label">
-                                        Enter time.
+                                        Enter time and return.
                                     </a>
                                 </div>
                             </div>
@@ -108,10 +141,10 @@
                             <div class="controllers-top-other">
                                 <div id="ctl-control-panel-close-timezone" class="ui labeled left floated button" tabindex="0">
                                     <div class="ui button">
-                                        <i class="chevron right icon"></i>
+                                        <i class="chevron left icon"></i>
                                     </div>
                                     <a class="ui basic label">
-                                        Choose timezone.
+                                        Choose timezone and return.
                                     </a>
                                 </div>
                             </div>

@@ -801,18 +801,18 @@ oDateAndOrTime = (function() {
     var eRow = window.document.getElementById('label-days');
     var content;
     var aDays = aDayCharacters.map(function(x, i, a) {
-      var aClassList = ['day-label'];
+    var aClasses = ['day-label'];
 
       if (i === 0) {
-        aClassList.push('left');
+        aClasses.push('left');
       }
       if (i === (a.length - 1)) {
-        aClassList.push('right');
+        aClasses.push('right');
       }
 
       eRow.insertAdjacentHTML(
         'beforeend',
-        '<div class="' + aClassList.join(' ').trim() + '">' + x + '</div>'
+        '<div class="' + aClasses.join(' ').trim() + '">' + x + '</div>'
       );
     });
   }
@@ -859,19 +859,21 @@ oDateAndOrTime = (function() {
       }
     }
 
-    var s = '';
-    var b = '';
+    var sButton = '';
     var sWN = '';
     var aClasses;
+    var aHtml = [];
     var o = {};
     var i = 0;
-
+    
     for (var x = 0; x < aWeek.length; x++) {
       x < 10 ? (sWN = '0' + x) : (sWN = x.toString());
-      s += '<div class="calendar-row day" id="week-' + sWN + '">';
+
+      aHtml.push('<div class="calendar-row" id="week-' + sWN + '">');
+
       for (var y = 0; y < aWeek[x].length; y++) {
         o = aWeek[x][y];
-        b = '';
+        sButton = '';
         aClasses = ['ctl-day'];
         
         if (y === 0) {
@@ -912,7 +914,7 @@ oDateAndOrTime = (function() {
           }
         }
 
-        b +=
+        sButton +=
           '<button class="' +
           aClasses.join(' ').trim() +
           '" type="button" aria-label="' +
@@ -929,15 +931,17 @@ oDateAndOrTime = (function() {
           ' data-day="' +
           o.day +
           '">';
-        b += o.day.toString();
-        b += '</button>';
-        s += b;
+        sButton += o.day.toString();
+        sButton += '</button>';
+        
+        aHtml.push(sButton);
         i++;
       }
-      s += '</div>';
+      aHtml.push('</div>');
     }
 
-    eCalDays.innerHTML = s;
+    eCalDays.innerHTML = aHtml.join('');
+
     // this listen event must run after Days are written to UI.
     listenForButtonClicksOnDays();
   }
