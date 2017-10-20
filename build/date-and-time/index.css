@@ -127,6 +127,10 @@ div.clock button:focus {
   padding-right: 7px;
 }
 
+.contain-calendar-days {
+  padding-top: 7px;
+}
+
 .calendar-row.year {
   padding-top: 7px;
 }
@@ -161,6 +165,18 @@ div.clock button:focus {
   height: 42px;
 }
 
+.calendar-row > .ctl-day.top {
+  border-top: 1px solid;
+}
+.calendar-row > .ctl-day.left {
+  border-left: 1px solid;
+}
+.calendar-row > .ctl-day.right {
+  border-right: 1px solid;
+}
+.calendar-row > .ctl-day.bottom {
+  border-bottom: 1px solid;
+}
 /* calendar and clock control widths */
 
 .ctl-today {
@@ -174,6 +190,16 @@ div.clock button:focus {
 .ctl-ampm {
   min-width: 42px;
   width: 42px;
+}
+
+.day-label.left {
+  border-top-left-radius: 0.28571429rem;
+  border-bottom-left-radius: 0.28571429rem;
+}
+
+.day-label.right {
+  border-top-right-radius: 0.28571429rem;
+  border-bottom-right-radius: 0.28571429rem;
 }
 
 .ctl-today,
@@ -190,7 +216,20 @@ div.clock button:focus {
   margin-top: 7px;
   margin-bottom: 7px;
   border: 1px solid;
-  border-radius: 3px;
+  border-radius: 0.28571429rem;
+}
+
+.btlr {
+  border-top-left-radius: 0.28571429rem;
+}
+.btrr {
+  border-top-right-radius: 0.28571429rem;
+}
+.bblr {
+  border-bottom-left-radius: 0.28571429rem;
+}
+.bbrr {
+  border-bottom-right-radius: 0.28571429rem;
 }
 
 .ctl-ym.left,
@@ -199,8 +238,6 @@ div.clock button:focus {
   border-top: 1px solid;
   border-left: 1px solid;
   border-bottom: 1px solid;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
 }
 
 .ctl-ym.right,
@@ -209,8 +246,6 @@ div.clock button:focus {
   border-top: 1px solid;
   border-right: 1px solid;
   border-bottom: 1px solid;
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
 }
 
 .ctl-ampm.right {
@@ -515,10 +550,11 @@ label {
 }
 
 /* color */
-
+.day-label {
+  background-color: rgba(100, 100, 100, 0.1);
+}
 .ctl-day.mute {
   color: #797979;
-  /*  background-color: rgb(238, 235, 235); */
 }
 
 .ctl-today.special,
@@ -529,8 +565,12 @@ label {
 .ctl-hmsm.right,
 .ctl-ampm.left,
 .ctl-ampm.right,
-.ipt-time {
-  border-color: #a2a0a0;
+.ipt-time,
+.calendar-row > .ctl-day.top,
+.calendar-row > .ctl-day.left,
+.calendar-row > .ctl-day.right,
+.calendar-row > .ctl-day.bottom {
+  border-color: rgb(162, 160, 160);
 }
 
 .ctl-today:focus,
@@ -538,7 +578,7 @@ label {
 .ctl-day:focus,
 .ctl-hmsm:focus,
 .ctl-ampm:focus {
-  background: #dddada;
+  background-color: rgb(162, 160, 160);
 }
 
 .ctl-today:active,
@@ -551,7 +591,7 @@ label {
 .ctl-hmsm.active,
 .ctl-ampm:active,
 .ctl-ampm.active {
-  background: #464646;
+  background-color: #464646;
   color: #fff;
 }
 

@@ -43,29 +43,29 @@
                 </div>
                 <div class="calendar">
                     <div class="calendar-row year">
-                        <button class="ctl-ym left" type="button" aria-label="decrease year" onclick="pickDateTime.controlYear(event, '<')">
+                        <button class="ctl-ym left btlr" type="button" aria-label="decrease year" onclick="pickDateTime.controlYear(event, '<')">
                             <i class="angle double left icon"></i>
                         </button>
 
                         <input id="input-year" class="ipt-ym" type="number" placeholder="year" value="" aria-label="year" min="1900" onblur="pickDateTime.directBlurYear(event)">
 
-                        <button class="ctl-ym right" type="button" aria-label="increase year" onclick="pickDateTime.controlYear(event, '>')">
+                        <button class="ctl-ym right btrr" type="button" aria-label="increase year" onclick="pickDateTime.controlYear(event, '>')">
                             <i class="angle double right icon"></i>
                         </button>
                     </div>
                     <div class="calendar-row month">
-                        <button class="ctl-ym left" type="button" aria-label="decrease month" onclick="pickDateTime.controlMonth(event, '<')">
+                        <button class="ctl-ym left bblr" type="button" aria-label="decrease month" onclick="pickDateTime.controlMonth(event, '<')">
                             <i class="angle left icon"></i>
                         </button>
 
                         <input id="input-month" class="ipt-ym" type="number" placeholder="month" value="" aria-label="month" min="0" onblur="pickDateTime.directBlurMonth(event)">
 
-                        <button class="ctl-ym right" type="button" aria-label="increase month" onclick="pickDateTime.controlMonth(event, '>')">
+                        <button class="ctl-ym right bbrr" type="button" aria-label="increase month" onclick="pickDateTime.controlMonth(event, '>')">
                             <i class="angle right icon"></i>
                         </button>
                     </div>
                     <div class="calendar-row day top" id="label-days"></div>
-                    <div id="calendar-days">
+                    <div id="calendar-days" class="contain-calendar-days">
 
                     </div>
                     <!-- calander-days -->
@@ -107,7 +107,10 @@
                             <i class="angle left icon"></i>
                         </button>
 
-                        <label for="input-second"><i class="circle icon" aria-hidden="true"></i> seconds <i class="circle icon" aria-hidden="true"></i></label>
+                        <label for="input-second">
+                            <i class="circle icon" aria-hidden="true"></i> seconds
+                            <i class="circle icon" aria-hidden="true"></i>
+                        </label>
                         <input id="input-second" class="ipt-time" type="number" placeholder="seconds" value="" aria-label="second" min="0" max="59"
                             onblur="pickDateTime.directBlurSeconds(event)">
 
@@ -120,7 +123,10 @@
                             <i class="angle left icon"></i>
                         </button>
 
-                        <label for="input-millisecond"><i class="square icon" aria-hidden="true"></i> milliseconds <i class="square icon" aria-hidden="true"></i></label>
+                        <label for="input-millisecond">
+                            <i class="square icon" aria-hidden="true"></i> milliseconds
+                            <i class="square icon" aria-hidden="true"></i>
+                        </label>
                         <input id="input-millisecond" class="ipt-time" type="number" placeholder="milliseconds" value="" aria-label="millisecond"
                             min="0" max="999" onblur="pickDateTime.directBlurMilliseconds(event)">
 

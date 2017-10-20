@@ -800,10 +800,19 @@ oDateAndOrTime = (function() {
   function writeLabels() {
     var eRow = window.document.getElementById('label-days');
     var content;
-    var aDays = aDayCharacters.map(function(x) {
+    var aDays = aDayCharacters.map(function(x, i, a) {
+      var aClassList = ['day-label'];
+
+      if (i === 0) {
+        aClassList.push('left');
+      }
+      if (i === (a.length - 1)) {
+        aClassList.push('right');
+      }
+
       eRow.insertAdjacentHTML(
         'beforeend',
-        '<div class="day-label">' + x + '</div>'
+        '<div class="' + aClassList.join(' ').trim() + '">' + x + '</div>'
       );
     });
   }
@@ -853,14 +862,7 @@ oDateAndOrTime = (function() {
     var s = '';
     var b = '';
     var sWN = '';
-    var sClassSide = '';
-    var sClassCal = '';
-    var sClassActive = '';
-    var sClassTL = '';
-    var sClassTR = '';
-    var sClassBL = '';
-    var sClassBR = '';
-    var sClasses = '';
+    var aClasses;
     var o = {};
     var i = 0;
 
@@ -870,53 +872,49 @@ oDateAndOrTime = (function() {
       for (var y = 0; y < aWeek[x].length; y++) {
         o = aWeek[x][y];
         b = '';
-        sClassSide = '';
-        sClassCal = '';
-        sClassActive = '';
-        sClassTL = '';
-        sClassTR = '';
-        sClassBL = '';
-        sClassBR = '';
-        sClasses = '';
+        aClasses = ['ctl-day'];
+        
         if (y === 0) {
-          sClassSide = ' left';
+          aClasses.push('left');
         }
         if (y === 6) {
-          sClassSide = ' right';
+          aClasses.push('right');
         }
         if (o.month !== nMonth) {
-          sClassCal = ' mute';
+          aClasses.push('mute');
         }
         if (o.year === nYear && o.month === nMonth && o.day === nDayOfMonth) {
-          sClassActive = ' active';
+          aClasses.push('active');
         }
         if (x === 0) {
+          aClasses.push('right');
+          aClasses.push('top');
+          aClasses.push('bottom');
           if (y === 0) {
-            sClassTL = ' tl';
+            aClasses.push('btlr');
           }
           if (y === 6) {
-            sClassTR = ' tr';
+            aClasses.push('btrr');
           }
+        }
+        if (x > 0 && x < (aWeek.length - 1)) {
+          aClasses.push('right');
+          aClasses.push('bottom');
         }
         if (x === aWeek.length - 1) {
+          aClasses.push('right');
+          aClasses.push('bottom');
           if (y === 0) {
-            sClassBL = ' bl';
+            aClasses.push('bblr');
           }
           if (y === 6) {
-            sClassBR = ' br';
+            aClasses.push('bbrr');
           }
         }
-        sClasses =
-          sClassSide +
-          sClassCal +
-          sClassActive +
-          sClassTL +
-          sClassTR +
-          sClassBL +
-          sClassBR;
+
         b +=
-          '<button class="ctl-day' +
-          sClasses +
+          '<button class="' +
+          aClasses.join(' ').trim() +
           '" type="button" aria-label="' +
           o.year +
           '-' +
