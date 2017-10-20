@@ -1,21 +1,21 @@
 widgetDateTime = (function() {
-  var eClose;
-  var eCloseCalendar;
-  var eCloseTime;
-  var eCloseTimezone;
-  var eSave;
+  var eControlPanelClose;
+  var eControlPanelCloseCalendar;
+  var eControlPanelCloseTime;
+  var eControlPanelCloseTimezone;
+  var eControlPanelSave;
   var eControlPanelContainer;
   var eControlPanelCalendar;
   var eControlPanelTime;
-  var eShowDate;
-  var eShowDateLabel;
-  var eShowTime;
-  var eShowTimeLabel;
-  var eShowTimezone;
-  var eShowTimezoneLabel;
-  var eDestroy;
-  var eKeepEditing;
-  var eDiscard;
+  var eControlPanelShowDate;
+  var eControlPanelShowDateLabel;
+  var eControlPanelShowTime;
+  var eControlPanelShowTimeLabel;
+  var eControlPanelShowTimezone;
+  var eControlPanelShowTimezoneLabel;
+  var eControlPanelDestroy;
+  var eControlPanelKeepEditing;
+  var eControlPanelDiscard;
   var sTimezoneGuess = moment.tz.guess();
 
   function getElement(sElementName) {
@@ -24,19 +24,22 @@ widgetDateTime = (function() {
   }
 
   function addEventListeners() {
-    eShowDate.addEventListener('click', function() {
+    eControlPanelShowDate.addEventListener('click', function() {
       eControlPanelCalendar.classList.remove('hide');
       eControlPanelContainer.classList.add('control-panel-slideleft');
     });
-    eShowTime.addEventListener('click', function() {
+
+    eControlPanelShowTime.addEventListener('click', function() {
       eControlPanelTime.classList.remove('hide');
       eControlPanelContainer.classList.add('control-panel-slideleft');
     });
-    eShowTimezone.addEventListener('click', function() {
+
+    eControlPanelShowTimezone.addEventListener('click', function() {
       eControlPanelTimezone.classList.remove('hide');
       eControlPanelContainer.classList.add('control-panel-slideleft');
     });
-    eCloseCalendar.addEventListener('click', function() {
+
+    eControlPanelCloseCalendar.addEventListener('click', function() {
       eControlPanelContainer.classList.remove('control-panel-slideleft');
       eControlPanelContainer.classList.add('control-panel-slideright');
       setTimeout(function() {
@@ -44,7 +47,8 @@ widgetDateTime = (function() {
         eControlPanelContainer.classList.remove('control-panel-slideright');
       }, 1000);
     });
-    eCloseTime.addEventListener('click', function() {
+
+    eControlPanelCloseTime.addEventListener('click', function() {
       eControlPanelContainer.classList.remove('control-panel-slideleft');
       eControlPanelContainer.classList.add('control-panel-slideright');
       setTimeout(function() {
@@ -52,7 +56,8 @@ widgetDateTime = (function() {
         eControlPanelContainer.classList.remove('control-panel-slideright');
       }, 1000);
     });
-    eCloseTimezone.addEventListener('click', function() {
+
+    eControlPanelCloseTimezone.addEventListener('click', function() {
       eControlPanelContainer.classList.remove('control-panel-slideleft');
       eControlPanelContainer.classList.add('control-panel-slideright');
       setTimeout(function() {
@@ -60,24 +65,27 @@ widgetDateTime = (function() {
         eControlPanelContainer.classList.remove('control-panel-slideright');
       }, 1000);
     });
-    eShowTime.addEventListener('click', function() {});
-    eShowTimezone.addEventListener('click', function() {});
-    eClose.addEventListener('click', function() {
-      eDiscard.classList.remove('hide');
-      eDiscard.classList.add('active');
-      eDiscard.classList.remove('slidedown');
-      eDiscard.classList.add('slideup');
+
+    eControlPanelClose.addEventListener('click', function() {
+      eControlPanelDiscard.classList.remove('hide');
+      eControlPanelDiscard.classList.add('active');
+      eControlPanelDiscard.classList.remove('control-panel-slidedown');
+      eControlPanelDiscard.classList.add('control-panel-slideup');
     });
-    eSave.addEventListener('click', function() {});
-    eDestroy.addEventListener('click', function() {});
-    eKeepEditing.addEventListener('click', function() {
-      eDiscard.classList.add('slidedown');
-      eDiscard.classList.remove('slideup');
+
+    eControlPanelKeepEditing.addEventListener('click', function() {
+      eControlPanelDiscard.classList.add('control-panel-slidedown');
+      eControlPanelDiscard.classList.remove('control-panel-slideup');
       setTimeout(function() {
-        eDiscard.classList.add('hide');
-        eDiscard.classList.remove('active');
+        eControlPanelDiscard.classList.add('hide');
+        eControlPanelDiscard.classList.remove('active');
+        eControlPanelDiscard.classList.remove('control-panel-slidedown');
       }, 1000);
     });
+
+    eControlPanelSave.addEventListener('click', function() {});
+
+    eControlPanelDestroy.addEventListener('click', function() {});
   }
 
   function defaultShortDateString() {
@@ -94,7 +102,7 @@ widgetDateTime = (function() {
 
   function writeShortDate(s) {
     // console.log(date.toLocaleDateString(language, options));
-    eShowDateLabel.textContent = s;
+    eControlPanelShowDateLabel.textContent = s;
   }
 
   function defaultShortTimeString() {
@@ -124,7 +132,7 @@ widgetDateTime = (function() {
   }
 
   function writeShortTime(s) {
-    eShowTimeLabel.textContent = s;
+    eControlPanelShowTimeLabel.textContent = s;
   }
 
   function defaultTimezone() {
@@ -133,32 +141,45 @@ widgetDateTime = (function() {
     return s;
   }
   function writeTimezone(s) {
-    eShowTimezoneLabel.textContent = s;
+    eControlPanelShowTimezoneLabel.textContent = s;
   }
 
-  function initializeElements() {
-    eClose = getElement('ctl-close');
-    eCloseCalendar = getElement('ctl-close-calendar');
-    eCloseTime = getElement('ctl-close-time');
-    eCloseTimezone = getElement('ctl-close-timezone');
-    eSave = getElement('ctl-save');
+  function initializeControlPanelElements() {
+    eControlPanelClose = getElement('ctl-control-panel-close');
+
+    eControlPanelCloseCalendar = getElement('ctl-control-panel-close-calendar');
+    eControlPanelCloseTime = getElement('ctl-control-panel-close-time');
+    eControlPanelCloseTimezone = getElement('ctl-control-panel-close-timezone');
+
     eControlPanelContainer = getElement('control-panel-container');
     eControlPanelCalendar = getElement('control-panel-calendar');
     eControlPanelTime = getElement('control-panel-time');
     eControlPanelTimezone = getElement('control-panel-timezone');
-    eShowDate = getElement('ctl-show-date');
-    eShowDateLabel = getElement('ctl-show-date-label');
-    eShowTime = getElement('ctl-show-time');
-    eShowTimeLabel = getElement('ctl-show-time-label');
-    eShowTimezone = getElement('ctl-show-timezone');
-    eShowTimezoneLabel = getElement('ctl-show-timezone-label');
-    eDiscard = getElement('card-check-discard');
-    eDestroy = getElement('ctl-destroy');
-    eKeepEditing = getElement('ctl-keep-editing');
+
+    eControlPanelShowDate = getElement('ctl-control-panel-show-date');
+    eControlPanelShowDateLabel = getElement(
+      'ctl-control-panel-show-date-label'
+    );
+
+    eControlPanelShowTime = getElement('ctl-control-panel-show-time');
+    eControlPanelShowTimeLabel = getElement(
+      'ctl-control-panel-show-time-label'
+    );
+
+    eControlPanelShowTimezone = getElement('ctl-control-panel-show-timezone');
+    eControlPanelShowTimezoneLabel = getElement(
+      'ctl-control-panel-show-timezone-label'
+    );
+
+    eControlPanelDiscard = getElement('control-panel-card-check-discard');
+
+    eControlPanelKeepEditing = getElement('ctl-control-panel-keep-editing');
+    eControlPanelSave = getElement('ctl-control-panel-save');
+    eControlPanelDestroy = getElement('ctl-control-panel-destroy');
   }
 
   function init() {
-    initializeElements();
+    initializeControlPanelElements();
     writeShortDate(defaultShortDateString());
     writeShortTime(defaultShortTimeString());
     writeTimezone(defaultTimezone());
