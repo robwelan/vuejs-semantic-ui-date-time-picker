@@ -200,16 +200,15 @@ widgetDateTimeZone = (function() {
     return dDate.toLocaleDateString(language, options);
   }
 
-  function defaultShortTimeString() {
-    var date = new Date();
+  function defaultShortTimeString(dT) {
     // getHours returns the hours in local time zone from 0 to 23
-    var hours = date.getHours();
+    var hours = dT.getHours();
     // getMinutes returns the minutes in local time zone from 0 to 59
-    var minutes = date.getMinutes();
+    var minutes = dT.getMinutes();
     // getSeconds returns the seconds in local time zone from 0 to 59
-    var seconds = date.getSeconds();
+    var seconds = dT.getSeconds();
     // getMilliseconds returns the milliseconds in local time zone from 0 to 999
-    var milliseconds = date.getMilliseconds();
+    var milliseconds = dT.getMilliseconds();
     var sH = '';
     var sM = '';
     var sS = '';
@@ -228,25 +227,37 @@ widgetDateTimeZone = (function() {
     sH = hours.toString();
 
     // minutes and seconds should always be two digits long
-    minutes < 10 ? sM = 0 + minutes.toString() : sM = minutes.toString();
-    seconds < 10 ? sS = 0 + seconds.toString() : sS = seconds.toString();
-    // if (minutes < 10) {
-    //   minutes = '0' + minutes.toString();
-    // }
-
+    minutes < 10 ? sM = '0' + minutes.toString() : sM = minutes.toString();
+    seconds < 10 ? sS = '0' + seconds.toString() : sS = seconds.toString();
+    if (milliseconds < 10) {
+      sMi = '00' + milliseconds.toString();
+    } else if (milliseconds < 100) {
+      sMi = '0' + milliseconds.toString();
+    } else {
+      sMi = milliseconds.toString();
+    }
+    
     // Start building time:
     s = sH + ':' + sM;
 
     if (bShowSeconds === true) {
       s = s + ':' + sS;
+      if (bShowMilliseconds === true) {
+        s = s + '.' + sMi;
+      }
     }
 
-    if (bShowMilliseconds === true) {
-      s = s + '.' + sM;
+    // Force value of seconds and milliseconds to zero if they are not to be displayed
+    if (bShowSeconds === false) {
+      nSecond = 0;
+      nMillisecond = 0;
+    }
+    if (bShowMilliseconds === false) {
+      nMillisecond = 0;
     }
 
     s = s + meridiem;
-alert('here')
+
     return s;
   }
 
@@ -858,6 +869,8 @@ alert('here')
     changeMinute(nMinute);
     changeSecond(nSecond);
     changeMillisecond(nMillisecond);
+
+    writeControlPanelShortTime(defaultShortTimeString(dTime))
   }
 
   function fixMinutesOrSecondsInput(sType) {
@@ -1179,15 +1192,13 @@ alert('here')
       bShowSeconds = true;
       eRowSeconds.classList.add('active');
       eHandSecond.classList.add('active');
-    }
-    if (o.show.seconds === true && o.show.milliseconds === true) {
-      bShowMilliseconds = true;
-      eRowMilliseconds.classList.add('active');
-      eHandMillisecond.classList.add('active');
+      if (o.show.milliseconds === true) {
+        bShowMilliseconds = true;
+        eRowMilliseconds.classList.add('active');
+        eHandMillisecond.classList.add('active');
+      }
     }
   }
-
-// todo
 
   // Timezone
 
@@ -1200,7 +1211,7 @@ alert('here')
     controlVisibilityOfHands(oConfig);
     // Control Panel
     writeControlPanelShortDate(getShortDateString(dToday));
-    writeControlPanelShortTime(defaultShortTimeString());
+    writeControlPanelShortTime(defaultShortTimeString(dTime));
     writeControlPanelTimezone(defaultTimezone());
     addControlPanelEventListeners();
     // Calendar
