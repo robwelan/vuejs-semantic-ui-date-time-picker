@@ -368,7 +368,7 @@ label {
 
 .clock-frame {
   width: 294px;
-  height: 294px;
+  height: 269px;
   border: 1px solid;
   border-radius: 14px;
   padding: 7px;
@@ -388,9 +388,9 @@ label {
 }
 
 .clock-outer {
-  width: 260px;
-  height: 260px;
-  min-height: 260px;
+  width: 250px;
+  height: 250px;
+  min-height: 250px;
   border-radius: 50%;
   position: relative;
   z-index: 1;
@@ -398,8 +398,8 @@ label {
 
 .clock-face {
   position: absolute;
-  width: 95%;
-  height: 95%;
+  width: 90%;
+  height: 90%;
   top: 2.5%;
   left: 0;
   right: 0;
@@ -484,7 +484,7 @@ label {
 
 .hour-hand {
   position: absolute;
-  top: 17%;
+  top: 16.9%;
   left: 0;
   right: 0;
   width: 26px;
@@ -509,7 +509,7 @@ label {
 
 .minute-hand {
   position: absolute;
-  top: 4%;
+  top: 3.5%;
   left: 0;
   right: 0;
   width: 26px;
@@ -565,7 +565,6 @@ label {
 }
 
 .second-end {
-  display: none;
   position: absolute;
   bottom: 0;
   left: -3px;
@@ -575,7 +574,6 @@ label {
 }
 
 .millisecond-end {
-  display: none;
   position: absolute;
   bottom: 0;
   left: -3px;

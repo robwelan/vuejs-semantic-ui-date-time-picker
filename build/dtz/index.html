@@ -138,32 +138,32 @@
                             </div>
                             <div class="clock">
                                 <div class="clock-row hour">
-                                    <button class="ctl-hmsm left" type="button" aria-label="decrease hours" onclick="pickDateTime.controlHours(event, '<')">
+                                    <button class="ctl-hmsm left" type="button" aria-label="decrease hours" onclick="widgetDateTimeZone.controlHours(event, '<')">
                                         <i class="angle left icon"></i>
                                     </button>
 
                                     <label for="input-hour">hours</label>
-                                    <input id="input-hour" class="ipt-time" type="number" placeholder="hours" value="" aria-label="hour" min="1" max="12" onblur="pickDateTime.directBlurHours(event)">
+                                    <input id="input-hour" class="ipt-time" type="number" placeholder="hours" value="" aria-label="hour" min="1" max="12" onblur="widgetDateTimeZone.directBlurHours(event)">
 
-                                    <button class="ctl-hmsm right" type="button" aria-label="increase hours" onclick="pickDateTime.controlHours(event, '>')">
+                                    <button class="ctl-hmsm right" type="button" aria-label="increase hours" onclick="widgetDateTimeZone.controlHours(event, '>')">
                                         <i class="angle right icon"></i>
                                     </button>
                                 </div>
                                 <div class="clock-row minute">
-                                    <button class="ctl-hmsm left" type="button" aria-label="decrease minutes" onclick="pickDateTime.controlMinutes(event, '<')">
+                                    <button class="ctl-hmsm left" type="button" aria-label="decrease minutes" onclick="widgetDateTimeZone.controlMinutes(event, '<')">
                                         <i class="angle left icon"></i>
                                     </button>
 
                                     <label for="input-minute">minutes</label>
                                     <input id="input-minute" class="ipt-time" type="number" placeholder="minutes" value="" aria-label="minute" min="0" max="59"
-                                        onblur="pickDateTime.directBlurMinutes(event)">
+                                        onblur="widgetDateTimeZone.directBlurMinutes(event)">
 
-                                    <button class="ctl-hmsm right" type="button" aria-label="increase minutes" onclick="pickDateTime.controlMinutes(event, '>')">
+                                    <button class="ctl-hmsm right" type="button" aria-label="increase minutes" onclick="widgetDateTimeZone.controlMinutes(event, '>')">
                                         <i class="angle right icon"></i>
                                     </button>
                                 </div>
-                                <div class="clock-row second">
-                                    <button class="ctl-hmsm left" type="button" aria-label="decrease seconds" onclick="pickDateTime.controlSeconds(event, '<')">
+                                <div id="row-seconds" class="clock-row second">
+                                    <button class="ctl-hmsm left" type="button" aria-label="decrease seconds" onclick="widgetDateTimeZone.controlSeconds(event, '<')">
                                         <i class="angle left icon"></i>
                                     </button>
 
@@ -172,14 +172,14 @@
                                         <i class="circle icon" aria-hidden="true"></i>
                                     </label>
                                     <input id="input-second" class="ipt-time" type="number" placeholder="seconds" value="" aria-label="second" min="0" max="59"
-                                        onblur="pickDateTime.directBlurSeconds(event)">
+                                        onblur="widgetDateTimeZone.directBlurSeconds(event)">
 
-                                    <button class="ctl-hmsm right" type="button" aria-label="increase seconds" onclick="pickDateTime.controlSeconds(event, '>')">
+                                    <button class="ctl-hmsm right" type="button" aria-label="increase seconds" onclick="widgetDateTimeZone.controlSeconds(event, '>')">
                                         <i class="angle right icon"></i>
                                     </button>
                                 </div>
-                                <div class="clock-row millisecond">
-                                    <button class="ctl-hmsm left" type="button" aria-label="decrease milliseconds" onclick="pickDateTime.controlMilliseconds(event, '<')">
+                                <div id="row-milliseconds" class="clock-row millisecond">
+                                    <button class="ctl-hmsm left" type="button" aria-label="decrease milliseconds" onclick="widgetDateTimeZone.controlMilliseconds(event, '<')">
                                         <i class="angle left icon"></i>
                                     </button>
 
@@ -188,17 +188,17 @@
                                         <i class="square icon" aria-hidden="true"></i>
                                     </label>
                                     <input id="input-millisecond" class="ipt-time" type="number" placeholder="milliseconds" value="" aria-label="millisecond"
-                                        min="0" max="999" onblur="pickDateTime.directBlurMilliseconds(event)">
+                                        min="0" max="999" onblur="widgetDateTimeZone.directBlurMilliseconds(event)">
 
-                                    <button class="ctl-hmsm right" type="button" aria-label="increase milliseconds" onclick="pickDateTime.controlMilliseconds(event, '>')">
+                                    <button class="ctl-hmsm right" type="button" aria-label="increase milliseconds" onclick="widgetDateTimeZone.controlMilliseconds(event, '>')">
                                         <i class="angle right icon"></i>
                                     </button>
                                 </div>
                                 <div class="clock-row ampm">
-                                    <button id="btn-am" class="ctl-ampm left bblr" type="button" aria-label="am" onclick="pickDateTime.controlAMPM(event, 'am')">
+                                    <button id="btn-am" class="ctl-ampm left bblr" type="button" aria-label="am" onclick="widgetDateTimeZone.controlAMPM(event, 'am')">
                                         AM
                                     </button>
-                                    <button id="btn-pm" class="ctl-ampm right bbrr" type="button" aria-label="pm" onclick="pickDateTime.controlAMPM(event, 'pm')">
+                                    <button id="btn-pm" class="ctl-ampm right bbrr" type="button" aria-label="pm" onclick="widgetDateTimeZone.controlAMPM(event, 'pm')">
                                         PM
                                     </button>
                                 </div>
