@@ -1,22 +1,29 @@
 /* normalising things  - start*/
-div.calendar input[type='button'],
-div.calendar input[type='submit'],
-div.calendar input[type='reset'],
-div.calendar input[type='file']::-webkit-file-upload-button,
-div.calendar button {
+div.snuggle-date-time input[type='button'],
+div.snuggle-date-time input[type='button' i],
+div.snuggle-date-time input[type='submit'],
+div.snuggle-date-time input[type='submit' i],
+div.snuggle-date-time input[type='reset'],
+div.snuggle-date-time input[type='reset' i],
+div.snuggle-date-time input[type='file']::-webkit-file-upload-button,
+div.snuggle-date-time input[type='file' i]::-webkit-file-upload-button,
+div.snuggle-date-time button {
   border: 0;
+  border-color: black;
+  border-radius: 0;
+  border-width: 0;
   padding: 0;
   margin: 0;
 }
 
-div.calendar input[type='number']::-webkit-inner-spin-button,
-div.calendar input[type='number']::-webkit-outer-spin-button {
+div.snuggle-date-time input[type='number']::-webkit-inner-spin-button,
+div.snuggle-date-time input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-div.calendar input:focus,
-div.calendar button:focus {
+div.snuggle-date-time input:focus,
+div.snuggle-date-time button:focus {
   outline: none;
 }
 
@@ -77,9 +84,11 @@ label .icon {
   width: 620px;
   height: 100%;
 }
+
 .control-panel-wrapper .col {
   flex: 1;
 }
+
 .control-panel-main {
   width: 100%;
 }
@@ -88,19 +97,23 @@ label .icon {
   height: 100%;
   max-height: calc(100% - 48px);
 }
+
 .controllers-top {
   padding: 5px;
   margin-bottom: 5px;
   height: 70px;
 }
+
 .controllers-top .wrap-buttons {
   height: 38px;
 }
+
 .controllers-top-other {
   padding: 5px;
   margin-bottom: 5px;
   height: 47px;
 }
+
 .controllers-bottom {
   position: relative;
   z-index: 10;
@@ -124,14 +137,17 @@ label .icon {
   animation: 1s controlpanel-card-slidedown;
   margin-top: 24px;
 }
+
 .control-panel-slideleft {
   animation: 1s controlpanel-slideleft;
-  margin-left: -312px;
+  margin-left: -311px;
 }
+
 .control-panel-slideright {
   animation: 1s controlpanel-slideright;
   left: 0;
 }
+
 @keyframes controlpanel-card-slideup {
   from {
     margin-top: 24px;
@@ -143,6 +159,7 @@ label .icon {
     height: 89px;
   }
 }
+
 @keyframes controlpanel-card-slidedown {
   from {
     margin-top: -103px;
@@ -154,6 +171,7 @@ label .icon {
     height: 89px;
   }
 }
+
 @keyframes controlpanel-slideleft {
   from {
     margin-left: 0;
@@ -162,6 +180,7 @@ label .icon {
     margin-left: -310px;
   }
 }
+
 @keyframes controlpanel-slideright {
   from {
     margin-left: -310px;
@@ -173,6 +192,11 @@ label .icon {
 /* Control Panel - End */
 
 /* Calendar / Clock - Start */
+.calendar-container {
+  width: 308px;
+  margin-left: 1px;
+}
+
 .calendar-row,
 .clock-row {
   display: -webkit-box;
@@ -217,12 +241,15 @@ label .icon {
 .calendar-row > .ctl-day.top {
   border-top: 1px solid;
 }
+
 .calendar-row > .ctl-day.left {
   border-left: 1px solid;
 }
+
 .calendar-row > .ctl-day.right {
   border-right: 1px solid;
 }
+
 .calendar-row > .ctl-day.bottom {
   border-bottom: 1px solid;
 }
@@ -257,7 +284,6 @@ label .icon {
 .ctl-ampm {
   display: block;
   cursor: pointer;
-  background: transparent;
 }
 
 .ctl-today.special {
@@ -272,7 +298,6 @@ label .icon {
   width: 100%;
   text-align: center;
   border: 1px solid;
-  background: #fff;
 }
 
 .day-label {
@@ -281,17 +306,312 @@ label .icon {
   justify-content: center;
   font-weight: 600;
 }
+
+.clock-wrapper {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.clock-row.minute,
+.clock-row.second,
+.clock-row.millisecond,
+.clock-row.ampm {
+  margin-top: -1px;
+}
+
+.clock-row.second,
+.clock-row.millisecond {
+  display: none;
+}
+
+.clock-row.second.active,
+.clock-row.millisecond.active {
+  display: flex;
+}
+
+.clock-row.ampm {
+  padding-bottom: 7px;
+}
+
+.ctl-ampm {
+  width: 50%;
+}
+
+.clock-row.hour,
+.clock-row.minute,
+.clock-row.second,
+.clock-row.millisecond {
+  position: relative;
+}
+
+label {
+  position: absolute;
+  bottom: 1px;
+  width: 294px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.clock-frame {
+  width: 294px;
+  height: 294px;
+  border: 1px solid;
+  border-radius: 14px;
+  padding: 7px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.clock-outer {
+  width: 260px;
+  height: 260px;
+  min-height: 260px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+}
+
+.clock-face {
+  position: absolute;
+  width: 95%;
+  height: 95%;
+  top: 2.5%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+
+.hide-lines {
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  top: 5%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.middle-panel {
+  position: absolute;
+  width: 49%;
+  height: 49%;
+  top: 25%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 4;
+}
+
+.center-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  top: calc(50% - 7px);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.marker-line {
+  width: 1px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.marker-line.main {
+  width: 4px;
+}
+
+.line-1 {
+  transform: rotate(0);
+}
+
+.line-2 {
+  transform: rotate(30deg);
+}
+
+.line-3 {
+  transform: rotate(60deg);
+}
+
+.line-4 {
+  transform: rotate(90deg);
+}
+
+.line-5 {
+  transform: rotate(120deg);
+}
+
+.line-6 {
+  transform: rotate(150deg);
+}
+
+.hour-hand {
+  position: absolute;
+  top: 17%;
+  left: 0;
+  right: 0;
+  width: 26px;
+  height: calc(33% + 14px);
+  border-radius: 100px;
+  margin: 0 auto;
+  z-index: 5;
+  clip-path: url('#clip-polygon');
+  clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 14px);
+  animation: shadow-hack 10s linear infinite;
+}
+
+.hour-end {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 23%;
+}
+
+.minute-hand {
+  position: absolute;
+  top: 4%;
+  left: 0;
+  right: 0;
+  width: 26px;
+  height: calc(46% + 14px);
+  border-radius: 100px;
+  margin: 0 auto;
+  z-index: 5;
+  clip-path: url('#clip-polygon');
+  clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 14px);
+  animation: shadow-hack 10s linear infinite;
+}
+
+.minute-end {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 23%;
+}
+
+.second-hand {
+  /* box-shadow: 0 0 2px rgba(0, 0, 0, 0.7); */
+  display: none;
+  position: absolute;
+  top: 2%;
+  left: 0;
+  right: 0;
+  width: 1px;
+  height: calc(50% + 30px);
+  border-radius: 5px;
+  margin: 0 auto;
+  z-index: 6;
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 35px);
+}
+
+.millisecond-hand {
+  /*  box-shadow: 0 0 2px rgba(162, 160, 160, 0.7); */
+  display: none;
+  position: absolute;
+  top: 2%;
+  left: 0;
+  right: 0;
+  width: 1px;
+  height: calc(50% + 30px);
+  border-radius: 5px;
+  margin: 0 auto;
+  z-index: 7;
+  transform: rotate(0deg);
+  transform-origin: center calc(100% - 35px);
+}
+
+.second-end {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: -3px;
+  height: 7px;
+  width: 7px;
+  border-radius: 50%;
+}
+
+.millisecond-end {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: -3px;
+  height: 7px;
+  width: 7px;
+}
+
+.second-hand.active,
+.second-end.active,
+.millisecond-hand.active,
+.millisecond-end.active {
+  display: block;
+}
+
+@keyframes shadow-hack {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* calendar and clock control borders */
-.btlr {
+div.snuggle-date-time .btlr {
   border-top-left-radius: 0.28571429rem;
 }
-.btrr {
+
+div.snuggle-date-time .btrr {
   border-top-right-radius: 0.28571429rem;
 }
-.bblr {
+
+div.snuggle-date-time .bblr {
   border-bottom-left-radius: 0.28571429rem;
 }
-.bbrr {
+
+div.snuggle-date-time .bbrr {
   border-bottom-right-radius: 0.28571429rem;
 }
 
@@ -333,9 +653,18 @@ label .icon {
 /* Colors: Control Panel - End */
 
 /* Colors: Calendar / Clock - Start */
+.ctl-today,
+.ctl-ym,
+.ctl-day,
+.ctl-hmsm,
+.ctl-ampm {
+  background: transparent;
+}
+
 .day-label {
   background-color: rgba(100, 100, 100, 0.1);
 }
+
 .ctl-day.mute {
   color: #797979;
 }
@@ -377,4 +706,77 @@ label .icon {
   background-color: #464646;
   color: #fff;
 }
+
+.ipt-ym,
+.ipt-time {
+  background: #fff;
+}
+
+/* Colors: Clock Specific - Start */
+.hide-lines {
+  background: white;
+}
+
+.middle-panel {
+  background: white;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.center-dot {
+  background: #464646;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.marker-line {
+  background: rgb(162, 160, 160);
+}
+
+.clock-outer {
+  background: white;
+}
+
+.clock-face {
+  background: white;
+}
+
+.hour-hand {
+  background-color: white;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
+}
+
+.minute-hand {
+  background-color: white;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
+}
+
+label {
+  color: rgb(162, 160, 160);
+}
+
+.clock-frame {
+  border-color: rgba(162, 160, 160, 0.4);
+}
+
+.marker-line.main {
+  background: #464646;
+}
+
+.hour-end {
+  background: rgb(162, 160, 160);
+}
+
+.minute-end {
+  background: rgb(162, 160, 160);
+}
+
+.second-hand,
+.second-end {
+  background: rgb(162, 160, 160);
+}
+
+.millisecond-hand,
+.millisecond-end {
+  background: rgb(162, 160, 160);
+}
+/* Colors: Clock Specific - End */
 /* Colors: Calendar / Clock - End */

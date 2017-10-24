@@ -98,6 +98,15 @@ widgetDateTimeZone = (function() {
   }
 
   // Control Panel Functions
+  function closeUICalendar() {
+    eControlPanelContainer.classList.remove('control-panel-slideleft');
+    eControlPanelContainer.classList.add('control-panel-slideright');
+    setTimeout(function() {
+      eControlPanelCalendar.classList.add('hide');
+      eControlPanelContainer.classList.remove('control-panel-slideright');
+    }, 1000);
+  }
+
   function addControlPanelEventListeners() {
     eControlPanelShowDate.addEventListener('click', function() {
       eControlPanelCalendar.classList.remove('hide');
@@ -115,12 +124,7 @@ widgetDateTimeZone = (function() {
     });
 
     eControlPanelCloseCalendar.addEventListener('click', function() {
-      eControlPanelContainer.classList.remove('control-panel-slideleft');
-      eControlPanelContainer.classList.add('control-panel-slideright');
-      setTimeout(function() {
-        eControlPanelCalendar.classList.add('hide');
-        eControlPanelContainer.classList.remove('control-panel-slideright');
-      }, 1000);
+      closeUICalendar();
     });
 
     eControlPanelCloseTime.addEventListener('click', function() {
@@ -412,6 +416,7 @@ widgetDateTimeZone = (function() {
       // re-write cal
       changeCalendarControls(nYear, nMonth, nDayOfMonth);
       writeDays(nYear, nMonth);
+//      closeUICalendar();
     } else {
       // change selected day
       var buttons = document.getElementsByClassName('ctl-day');
@@ -425,6 +430,7 @@ widgetDateTimeZone = (function() {
 
       var dSelected = new Date(nYear, nMonth, nDayOfMonth);
       writeControlPanelShortDate(getShortDateString(dSelected));
+//      closeUICalendar();
     }
   }
 

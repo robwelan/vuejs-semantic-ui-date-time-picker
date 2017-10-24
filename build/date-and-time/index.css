@@ -146,7 +146,14 @@ div.clock button:focus {
 .clock-row.ampm {
   margin-top: -1px;
 }
-
+.clock-row.second,
+.clock-row.millisecond {
+  display: none;
+}
+.clock-row.second.active,
+.clock-row.millisecond.active {
+  display: flex;
+}
 .clock-row.ampm {
   padding-bottom: 7px;
 }
@@ -389,7 +396,7 @@ label {
   position: absolute;
   width: 14px;
   height: 14px;
-  background: #333;
+  background: #464646;
   top: calc(50% - 7px);
   left: 0;
   right: 0;
@@ -400,7 +407,7 @@ label {
 }
 
 .marker-line {
-  background: #8a8a8a;
+  background: rgb(162, 160, 160);
   width: 1px;
   height: 100%;
   position: absolute;
@@ -494,7 +501,8 @@ label {
 }
 
 .second-hand {
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+  /* box-shadow: 0 0 2px rgba(0, 0, 0, 0.7); */
+  display: none;
   position: absolute;
   top: 2%;
   left: 0;
@@ -509,7 +517,8 @@ label {
 }
 
 .millisecond-hand {
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+  /*  box-shadow: 0 0 2px rgba(162, 160, 160, 0.7); */
+  display: none;
   position: absolute;
   top: 2%;
   left: 0;
@@ -524,6 +533,7 @@ label {
 }
 
 .second-end {
+  display: none;
   position: absolute;
   bottom: 0;
   left: -3px;
@@ -533,11 +543,19 @@ label {
 }
 
 .millisecond-end {
+  display: none;
   position: absolute;
   bottom: 0;
   left: -3px;
   height: 7px;
   width: 7px;
+}
+
+.second-hand.active,
+.second-end.active,
+.millisecond-hand.active,
+.millisecond-end.active {
+  display: block;
 }
 
 @keyframes shadow-hack {
@@ -598,31 +616,31 @@ label {
 /* clock colors */
 
 label {
-  color: #a2a0a0;
+  color: rgb(162, 160, 160);
 }
 
 .clock-frame {
-  border-color: #222;
+  border-color: rgba(162, 160, 160, 0.4);
 }
 
 .marker-line.main {
-  background: #222;
+  background: #464646;
 }
 
 .hour-end {
-  background: #222;
+  background: rgb(162, 160, 160);
 }
 
 .minute-end {
-  background: #ff5757;
+  background: rgb(162, 160, 160);
 }
 
 .second-hand,
 .second-end {
-  background: #ff5757;
+  background: rgb(162, 160, 160);
 }
 
 .millisecond-hand,
 .millisecond-end {
-  background: #57b6ff;
+  background: rgb(162, 160, 160);
 }
