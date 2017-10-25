@@ -2,12 +2,15 @@ var suiMoment = (function() {
   /* Time Zones */
   var SELECTED_AREA = 'Choose Area...';
   var SELECTED_LOCATION = 'Choose Location...';
+  var eWrapButtons = window.document.getElementById('wrap-timezone-buttons');
   var eAreas = window.document.getElementById('areas');
   var eLocations = window.document.getElementById('locations');
   var eListAreas = window.document.getElementById('list-areas');
   var eListLocations = window.document.getElementById('list-locations');
   var eTimezoneArea = window.document.getElementById('timezone-area');
   var eTimezoneLocation = window.document.getElementById('timezone-location');
+  var eTimezoneAreaLabel = window.document.getElementById('timezone-area-label');
+  var eTimezoneLocationLabel = window.document.getElementById('timezone-location-label');
   var eSearchArea = window.document.getElementById('search-area');
   var eSearchLocation = window.document.getElementById('search-location');
   var eSearchAreaIcon = window.document.getElementById('search-area-icon');
@@ -28,6 +31,16 @@ var suiMoment = (function() {
   var offsetTmz = [];
 
   function waterfallEmpty() {}
+
+  function animateWrapButtonsIn() {
+    eWrapButtons.classList.remove('wrap-buttons-slideup');
+    eWrapButtons.classList.add('wrap-buttons-slidedown');
+  }
+
+  function animateWrapButtonsOut() {
+    eWrapButtons.classList.remove('wrap-buttons-slidedown');
+    eWrapButtons.classList.add('wrap-buttons-slideup');
+  }
 
   function animateAreaIn() {
     eAreas.classList.remove('timezone-controls-slideup');
@@ -238,32 +251,30 @@ var suiMoment = (function() {
     var res = [];
 
     if (oGuessedLocation.isGuessed === true && bForceAll === false) {
-      res = aP
-        .filter(function(x) {
-          if (x.sZoneParent === oSelected.area) {
-            return x;
-          }
-        })
-    } else {
-      res = aP
-        .filter(function(x) {
+      res = aP.filter(function(x) {
+        if (x.sZoneParent === oSelected.area) {
           return x;
-        });
+        }
+      });
+    } else {
+      res = aP.filter(function(x) {
+        return x;
+      });
     }
 
     res.sort(function(a, b) {
       var sA = a.timeZoneId.toLowerCase();
       var sB = b.timeZoneId.toLowerCase();
-      
+
       if (sA < sB) {
         return -1;
       }
       if (sA > sB) {
         return 1;
       }
-    
+
       return 0;
-    })
+    });
 
     buttonArea = returnGeneratedButtonAll('location-area');
     buttonLocation = returnGeneratedButtonAll('location-location');
@@ -517,6 +528,7 @@ var suiMoment = (function() {
     var attributeLocation = this.getAttribute('data-location');
     var attributeLocationUI = this.getAttribute('data-location-ui');
     var attributeIdentifier = this.getAttribute('data-tzid');
+    var sLastArea = oSelected.area.toLowerCase();
     var sLastLocation = oSelected.location.toLowerCase();
 
     setDefaultsForButtons();
@@ -566,9 +578,31 @@ var suiMoment = (function() {
           }, 1000)
         ]);
       } else {
-        oSelected.location.toLowerCase();
+        if (sLastArea !== 'all locations') {
+          if (sLastArea === 'choose area...' && sLastLocation === 'choose location...') {
+            // do nothing
+          } else {
+            async.waterfall([
+              waterfallEmpty,
+              removeActiveFromButtons(eButtonsLocations),
+              removeActiveFromButtons(eButtonsAreas),
+              setLabelLocation(SELECTED_LOCATION),
+              setLabelArea(SELECTED_AREA),
+              removeListenerClickLocations(eButtonsLocations),
+              animateLocationOut(),
+              setTimeout(function() {
+                createListLocations(offsetTmz, true);
+                listenerClickLocations(eButtonsLocations);
+                animateLocationIn();
+              }, 1000)
+            ]);
+          }
+        }
       }
     } else {
+      eWrapButtons.classList.remove('hide');
+      animateWrapButtonsIn();
+      
       setLabelArea(attributeArea);
       setLabelLocation(attributeLocationUI);
 
@@ -593,6 +627,11 @@ var suiMoment = (function() {
   }
 
   function onClickButtonSelectedArea(event) {
+    animateWrapButtonsOut();
+    setTimeout(function() {
+      eWrapButtons.classList.add('hide');
+    }, 1000);
+
     if (eLocations.classList.contains('hide')) {
       animateAreaIn();
       eAreas.classList.remove('hide');
@@ -617,6 +656,11 @@ var suiMoment = (function() {
   }
 
   function onClickButtonSelectedLocation(event) {
+    animateWrapButtonsOut();
+    setTimeout(function() {
+      eWrapButtons.classList.add('hide');
+    }, 1000);
+
     if (eAreas.classList.contains('hide')) {
       animateLocationIn();
       eLocations.classList.remove('hide');
@@ -698,12 +742,12 @@ var suiMoment = (function() {
   }
 
   function setLabelArea(sArea) {
-    eTimezoneArea.textContent = sArea;
+    eTimezoneAreaLabel.textContent = sArea;
     oSelected.area = sArea;
   }
 
   function setLabelLocation(sLocation) {
-    eTimezoneLocation.textContent = sLocation;
+    eTimezoneLocationLabel.textContent = sLocation;
     oSelected.location = sLocation;
   }
 

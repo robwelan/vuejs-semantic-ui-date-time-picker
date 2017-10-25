@@ -1,3 +1,22 @@
+/* normalising things  - start*/
+div.snuggle-date-time input[type='button'],
+div.snuggle-date-time input[type='button' i],
+div.snuggle-date-time input[type='submit'],
+div.snuggle-date-time input[type='submit' i],
+div.snuggle-date-time input[type='reset'],
+div.snuggle-date-time input[type='reset' i],
+div.snuggle-date-time input[type='file']::-webkit-file-upload-button,
+div.snuggle-date-time input[type='file' i]::-webkit-file-upload-button,
+div.snuggle-date-time button {
+  border: 0;
+  border-color: black;
+  border-radius: 0;
+  border-width: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* normalising things  - end */
 .contain-date-time,
 .contain-date-time div,
 .contain-date-time button {
@@ -38,11 +57,18 @@
   background: white;
 }
 
+.select-time-zone {
+  overflow-y: hidden;
+}
+
 .wrap-selection-buttons {
   /* do something with height? */
   width: 100%;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 7px;
+  padding-right: 7px;
+  height: 114px;
 }
 
 .contain-tz-list {
@@ -78,16 +104,37 @@
   padding: 0;
 }
 
-.ctl-listitem-area,
-.ctl-listitem-location {
+div.snuggle-date-time .ctl-listitem-area,
+div.snuggle-date-time .ctl-listitem-location {
   font-size: 20px;
 }
 
-.ctl-tz {
+div.snuggle-date-time .ctl-listitem-location span {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  max-width: 50%;
+}
+
+div.snuggle-date-time .ctl-tz {
+  outline: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  border: 1px solid;
+  padding: 7px;
+  border-radius: 0.28571429rem;
+  width: 100%;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+div.snuggle-date-time .ctl-tz span {
+  width: 100%;
+  display: block;
+}
+
+div.snuggle-date-time .ctl-tz .label {
+  font-size: 14px;
 }
 
 .tz-title,
@@ -103,8 +150,8 @@
   font-size: 14px;
 }
 
-.ctl-listitem-area,
-.ctl-listitem-location {
+div.snuggle-date-time .ctl-listitem-area,
+div.snuggle-date-time .ctl-listitem-location {
   width: calc(100% - 2px);
   outline: none;
   position: relative;
@@ -112,30 +159,31 @@
   padding-left: 64px;
   text-align: left;
   border: 1px solid;
+  cursor: pointer;
 }
 
-.ctl-listitem-area.tl,
-.ctl-listitem-location.tl {
+div.snuggle-date-time .ctl-listitem-area.tl,
+div.snuggle-date-time .ctl-listitem-location.tl {
   border-top-left-radius: 0.28571429rem;
 }
 
-.ctl-listitem-area.tr,
-.ctl-listitem-location.tr {
+div.snuggle-date-time .ctl-listitem-area.tr,
+div.snuggle-date-time .ctl-listitem-location.tr {
   border-top-right-radius: 0.28571429rem;
 }
 
-.ctl-listitem-area.bl,
-.ctl-listitem-location.bl {
+div.snuggle-date-time .ctl-listitem-area.bl,
+div.snuggle-date-time .ctl-listitem-location.bl {
   border-bottom-left-radius: 0.28571429rem;
 }
 
-.ctl-listitem-area.br,
-.ctl-listitem-location.br {
+div.snuggle-date-time .ctl-listitem-area.br,
+div.snuggle-date-time .ctl-listitem-location.br {
   border-bottom-right-radius: 0.28571429rem;
 }
 
-.ctl-listitem-area img,
-.ctl-listitem-location img {
+div.snuggle-date-time .ctl-listitem-area img,
+div.snuggle-date-time .ctl-listitem-location img {
   position: absolute;
   left: 0;
   top: 50%;
@@ -149,20 +197,21 @@
 .contain-tz-list {
   border-color: rgba(34, 36, 38, 0.15);
 }
-.ctl-listitem-area,
-.ctl-listitem-location {
+div.snuggle-date-time .ctl-tz,
+div.snuggle-date-time .ctl-listitem-area,
+div.snuggle-date-time .ctl-listitem-location {
   border-color: #a2a0a0;
 }
-.ctl-listitem-area:focus,
-.ctl-listitem-location:focus {
+div.snuggle-date-time .ctl-listitem-area:focus,
+div.snuggle-date-time .ctl-listitem-location:focus {
   background: #dddada;
 }
-.ctl-listitem-area:active,
-.ctl-listitem-area.active,
-.ctl-listitem-location:active,
-.ctl-listitem-location.active,
-.ctl-listitem-location:active span,
-.ctl-listitem-location.active span {
+div.snuggle-date-time .ctl-listitem-area:active,
+div.snuggle-date-time .ctl-listitem-area.active,
+div.snuggle-date-time .ctl-listitem-location:active,
+div.snuggle-date-time .ctl-listitem-location.active,
+div.snuggle-date-time .ctl-listitem-location:active span,
+div.snuggle-date-time .ctl-listitem-location.active span {
   background: #464646;
   color: #fff;
 }
@@ -175,9 +224,17 @@
 .tz-detail {
   color: #464646;
 }
+
+div.snuggle-date-time .ctl-tz {
+  color: #464646;
+}
+div.snuggle-date-time .ctl-tz .label {
+  color: #a2a0a0;
+}
 .hide {
   display: none;
 }
+
 .wrap-areas-locations {
   overflow-y: hidden;
   height: 491px;
@@ -215,5 +272,33 @@
   to {
     margin-top: 0;
     max-height: 489px;
+  }
+}
+
+.wrap-buttons-slideup {
+  animation: 1s wrap-selection-slideup;
+  margin-top: -115px;
+}
+.wrap-buttons-slidedown {
+  animation: 1s wrap-selection-slidedown;
+  margin-top: 0;
+}
+
+@keyframes wrap-selection-slideup {
+  from {
+    margin-top: 0;
+  }
+
+  to {
+    margin-top: -115px;
+  }
+}
+@keyframes wrap-selection-slidedown {
+  from {
+    margin-top: -115px;
+  }
+
+  to {
+    margin-top: 0;
   }
 }

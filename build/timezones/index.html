@@ -26,10 +26,15 @@
         <div class="contain-date-time">
             <div class="snuggle-date-time">
                 <div class="select-time-zone">
-                    <div class="wrap-selection-buttons">
-                        <button class="ui basic button ctl-tz" id="timezone-area"></button>
-                        <span>/</span>
-                        <button class="ui basic button ctl-tz" id="timezone-location"></button>
+                    <div id="wrap-timezone-buttons" class="wrap-selection-buttons wrap-buttons-slidedown">
+                        <button id="timezone-area" class="ctl-tz">
+                            <span id="timezone-area-label"></span>
+                            <span class="label">Area</span>
+                        </button>
+                        <button id="timezone-location" class="ctl-tz">
+                            <span id="timezone-location-label"></span>
+                            <span class="label">Location</span>
+                        </button>
                     </div>
                     <div class="wrap-areas-locations">
                         <div id="areas" class="contain-areas hide">
