@@ -30,23 +30,23 @@ var suiMoment = (function() {
   function waterfallEmpty() {}
 
   function animateAreaIn() {
-    eAreas.classList.remove('zoomOut');
-    eAreas.classList.add('zoomIn');
+    eAreas.classList.remove('timezone-controls-slideup');
+    eAreas.classList.add('timezone-controls-slidedown');
   }
 
   function animateAreaOut() {
-    eAreas.classList.remove('zoomIn');
-    eAreas.classList.add('zoomOut');
+    eAreas.classList.remove('timezone-controls-slidedown');
+    eAreas.classList.add('timezone-controls-slideup');
   }
 
   function animateLocationIn() {
-    eLocations.classList.remove('zoomOut');
-    eLocations.classList.add('zoomIn');
+    eLocations.classList.remove('timezone-controls-slideup');
+    eLocations.classList.add('timezone-controls-slidedown');
   }
 
   function animateLocationOut() {
-    eLocations.classList.remove('zoomIn');
-    eLocations.classList.add('zoomOut');
+    eLocations.classList.remove('timezone-controls-slidedown');
+    eLocations.classList.add('timezone-controls-slideup');
   }
 
   function outputPointyEnd(sFromWhere) {
@@ -55,8 +55,6 @@ var suiMoment = (function() {
   }
 
   function filterListOff(eList, eSearch, eIcon) {
-    // todo
-
     var li = eList.getElementsByTagName('li');
 
     for (i = 0; i < li.length; i++) {
@@ -126,7 +124,6 @@ var suiMoment = (function() {
   }
 
   function returnGeneratedButtonAll(sType) {
-    // todo
     var button = window.document.createElement('button');
     var img = window.document.createElement('img');
     var sMainClass = '';
@@ -241,16 +238,32 @@ var suiMoment = (function() {
     var res = [];
 
     if (oGuessedLocation.isGuessed === true && bForceAll === false) {
-      res = aP.filter(function(x) {
-        if (x.sZoneParent === oSelected.area) {
-          return x;
-        }
-      });
+      res = aP
+        .filter(function(x) {
+          if (x.sZoneParent === oSelected.area) {
+            return x;
+          }
+        })
     } else {
-      res = aP.filter(function(x) {
-        return x;
-      });
+      res = aP
+        .filter(function(x) {
+          return x;
+        });
     }
+
+    res.sort(function(a, b) {
+      var sA = a.timeZoneId.toLowerCase();
+      var sB = b.timeZoneId.toLowerCase();
+      
+      if (sA < sB) {
+        return -1;
+      }
+      if (sA > sB) {
+        return 1;
+      }
+    
+      return 0;
+    })
 
     buttonArea = returnGeneratedButtonAll('location-area');
     buttonLocation = returnGeneratedButtonAll('location-location');
@@ -261,7 +274,6 @@ var suiMoment = (function() {
     frag.appendChild(liLocation);
 
     for (var i = 0; i < res.length; i++) {
-
       if (res[i].sZoneParent.toLowerCase() === 'etc') {
         continue;
       }
@@ -419,16 +431,12 @@ var suiMoment = (function() {
           timeZone: sTimeZoneTemp,
           timeZoneAbbreviation: moment.tz(aTimeZones[i]).format('z'),
           timeZoneLabel: 'GMT' + sTimeZoneTemp.toString(),
-          locationSearchString: oZoneChildTemp.formatted + 'GMT' + sTimeZoneTemp.toString()
+          locationSearchString:
+            oZoneChildTemp.formatted + 'GMT' + sTimeZoneTemp.toString()
         });
       } // oZoneChildTemp.hasID === true
     }
 
-    offsetTmz.sort(function(a, b) {
-      return a.timeZone - b.timeZone;
-    });
-
-    //    console.log(offsetTmz);
     async.waterfall([
       waterfallEmpty,
       createListAreas(aTimeZoneAreas),
@@ -454,7 +462,6 @@ var suiMoment = (function() {
   }
 
   function onClickButtonArea(event) {
-    // todo
     var btnAttribute = this.getAttribute('data-area');
 
     setDefaultsForButtons();
@@ -485,9 +492,10 @@ var suiMoment = (function() {
       animateAreaOut(),
       setTimeout(function() {
         eAreas.classList.add('hide');
+        eAreas.classList.remove('timezone-controls-slideup');
         eLocations.classList.remove('hide');
         animateLocationIn();
-      }, 400)
+      }, 1000)
     ]);
 
     outputPointyEnd(onClickButtonArea.name);
@@ -509,7 +517,7 @@ var suiMoment = (function() {
     var attributeLocation = this.getAttribute('data-location');
     var attributeLocationUI = this.getAttribute('data-location-ui');
     var attributeIdentifier = this.getAttribute('data-tzid');
-    // todo
+    var sLastLocation = oSelected.location.toLowerCase();
 
     setDefaultsForButtons();
 
@@ -518,13 +526,11 @@ var suiMoment = (function() {
       removeActiveFromButtons(eButtonsLocations),
       addClassToClickedButton(event.target, 'active')
     ]);
+
     // what happens when all areas is selected
     // what happens when all locations is selected
     // what happens when a location is selected
     if (attributeArea === 'All Areas') {
-      //  eAreas.classList.remove('hide');
-      //  eLocations.classList.add('hide');
-
       async.waterfall([
         waterfallEmpty,
         animateLocationOut(),
@@ -532,40 +538,53 @@ var suiMoment = (function() {
           eAreas.classList.remove('hide');
           eLocations.classList.add('hide');
           animateAreaIn();
-        }, 400)
+        }, 1000)
       ]);
 
-      setLabelArea(SELECTED_AREA);
-      setLabelLocation(SELECTED_LOCATION);
       removeActiveFromButtons(eButtonsAreas);
       removeActiveFromButtons(eButtonsLocations);
-      oSelected.moment = '';
-    } else if (attributeArea === 'All Locations') {
+
       setLabelArea(SELECTED_AREA);
       setLabelLocation(SELECTED_LOCATION);
       oSelected.moment = '';
+    } else if (attributeArea === 'All Locations') {
+      oSelected.moment = '';
 
-      async.waterfall([
-        waterfallEmpty,
-        removeActiveFromButtons(eButtonsAreas),
-        removeActiveFromButtons(eButtonsLocations),
-        removeListenerClickLocations(eButtonsLocations),
-        createListLocations(offsetTmz, true),
-        listenerClickLocations(eButtonsLocations)
-      ]);
+      if (sLastLocation !== 'choose location...') {
+        async.waterfall([
+          waterfallEmpty,
+          removeActiveFromButtons(eButtonsLocations),
+          removeActiveFromButtons(eButtonsAreas),
+          setLabelLocation(SELECTED_LOCATION),
+          setLabelArea(SELECTED_AREA),
+          removeListenerClickLocations(eButtonsLocations),
+          animateLocationOut(),
+          setTimeout(function() {
+            createListLocations(offsetTmz, true);
+            listenerClickLocations(eButtonsLocations);
+            animateLocationIn();
+          }, 1000)
+        ]);
+      } else {
+        oSelected.location.toLowerCase();
+      }
     } else {
       setLabelArea(attributeArea);
       setLabelLocation(attributeLocationUI);
-      //  eAreas.classList.add('hide');
-      //  eLocations.classList.add('hide');
+
       async.waterfall([
         waterfallEmpty,
         animateLocationOut(),
         setTimeout(function() {
-          //   eAreas.classList.remove('hide');
+          if (sLastLocation === 'choose location...') {
+            removeListenerClickLocations(eButtonsLocations);
+            createListLocations(offsetTmz, false);
+            listenerClickLocations(eButtonsLocations);
+          }
+          eAreas.classList.add('hide');
           eLocations.classList.add('hide');
-          //   animateAreaIn();
-        }, 400)
+          eLocations.classList.remove('timezone-controls-slideup');
+        }, 1000)
       ]);
       setMomentInTime(attributeIdentifier);
     }
@@ -574,8 +593,6 @@ var suiMoment = (function() {
   }
 
   function onClickButtonSelectedArea(event) {
-    //  eAreas.classList.remove('hide');
-    //  eLocations.classList.add('hide');
     if (eLocations.classList.contains('hide')) {
       animateAreaIn();
       eAreas.classList.remove('hide');
@@ -587,7 +604,7 @@ var suiMoment = (function() {
           eLocations.classList.add('hide');
           eAreas.classList.remove('hide');
           animateAreaIn();
-        }, 400)
+        }, 1000)
       ]);
     }
 
@@ -600,8 +617,6 @@ var suiMoment = (function() {
   }
 
   function onClickButtonSelectedLocation(event) {
-    //  eAreas.classList.add('hide');
-    //  eLocations.classList.remove('hide');
     if (eAreas.classList.contains('hide')) {
       animateLocationIn();
       eLocations.classList.remove('hide');
@@ -611,9 +626,10 @@ var suiMoment = (function() {
         animateAreaOut(),
         setTimeout(function() {
           eAreas.classList.add('hide');
+          eAreas.classList.remove('timezone-controls-slideup');
           eLocations.classList.remove('hide');
           animateLocationIn();
-        }, 400)
+        }, 1000)
       ]);
     }
 
@@ -627,7 +643,7 @@ var suiMoment = (function() {
 
   function onClickButtonSearchAreaIcon(event) {
     var sAttribute = event.target.getAttribute('data-type');
-    // todo
+
     if (sAttribute === 'search') {
       // call search
     } else {
