@@ -49,7 +49,6 @@ div.snuggle-date-time button {
   width: 100%;
   max-height: 543px;
   max-width: 310px;
-  margin-bottom: 5px;
   border: 1px solid white;
   border-radius: 0.28571429rem;
   -webkit-box-shadow: 0 10px 6px -6px #7f7e7e;
@@ -59,15 +58,13 @@ div.snuggle-date-time button {
 
 .select-time-zone {
   overflow-y: hidden;
+  height: 100%;
+  padding: 7px;
 }
 
 .wrap-selection-buttons {
   /* do something with height? */
   width: 100%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 7px;
-  padding-right: 7px;
   height: 114px;
 }
 
@@ -80,10 +77,10 @@ div.snuggle-date-time button {
   padding-right: 2px;
   width: 100%;
   height: 100%;
-  max-height: 446px;
   overflow-y: scroll;
   border: 1px solid;
   border-radius: 0.28571429rem;
+  max-height: 483px;
 }
 
 .search-areas,
@@ -120,12 +117,35 @@ div.snuggle-date-time .ctl-tz {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  border: 1px solid;
   padding: 7px;
-  border-radius: 0.28571429rem;
   width: 100%;
   font-size: 18px;
   cursor: pointer;
+}
+
+div.snuggle-date-time .top {
+  border: 1px solid;
+}
+div.snuggle-date-time .bottom {
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+div.snuggle-date-time .btlr {
+  border-top-left-radius: 0.28571429rem;
+}
+
+div.snuggle-date-time .btrr {
+  border-top-right-radius: 0.28571429rem;
+}
+
+div.snuggle-date-time .bblr {
+  border-bottom-left-radius: 0.28571429rem;
+}
+
+div.snuggle-date-time .bbrr {
+  border-bottom-right-radius: 0.28571429rem;
 }
 
 div.snuggle-date-time .ctl-tz span {
@@ -188,9 +208,6 @@ div.snuggle-date-time .ctl-listitem-location img {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 5px;
 }
 
 /* colors */
@@ -237,41 +254,35 @@ div.snuggle-date-time .ctl-tz .label {
 
 .wrap-areas-locations {
   overflow-y: hidden;
-  height: 491px;
+  height: 530px;
   width: 100%;
-  padding-left: 7px;
-  padding-right: 7px;
 }
 
 .timezone-controls-slideup {
   animation: 1s timezone-card-slideup;
-  margin-top: -491px;
+  margin-top: -530px;
 }
 .timezone-controls-slidedown {
   animation: 1s timezone-card-slidedown;
-  margin-top: 0;
+  height: 100%;
 }
 
 @keyframes timezone-card-slideup {
   from {
     margin-top: 0;
-    max-height: 489px;
   }
 
   to {
-    margin-top: -491px;
-    max-height: 489px;
+    margin-top: -530px;
   }
 }
 @keyframes timezone-card-slidedown {
   from {
-    margin-top: -491px;
-    max-height: 489px;
+    margin-top: -530px;
   }
 
   to {
     margin-top: 0;
-    max-height: 489px;
   }
 }
 
