@@ -455,18 +455,18 @@ oDateAndOrTime = (function() {
       }
     }
     if (sField === 'ampm') {
-      var nRotateHour = Number(eInputHour.value);
-
+      if (sMeridiem === sCommand) {
+        return; // already set
+      }
       if (sCommand === 'am') {
         sMeridiem = 'am';
+        nHour -= 12;
       }
       if (sCommand === 'pm') {
         sMeridiem = 'pm';
-        nRotateHour += 12;
+        nHour += 12;
       }
-      nHour = nRotateHour;
     }
-
     changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
   }
 

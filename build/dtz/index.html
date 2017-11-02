@@ -138,14 +138,14 @@
                             </div>
                             <div class="clock">
                                 <div class="clock-row hour">
-                                    <button class="ctl-hmsm left" type="button" aria-label="decrease hours" onclick="widgetDateTimeZone.controlHours(event, '<')">
+                                    <button class="ctl-hmsm left btlr" type="button" aria-label="decrease hours" onclick="widgetDateTimeZone.controlHours(event, '<')">
                                         <i class="angle left icon"></i>
                                     </button>
 
                                     <label for="input-hour">hours</label>
                                     <input id="input-hour" class="ipt-time" type="number" placeholder="hours" value="" aria-label="hour" min="1" max="12" onblur="widgetDateTimeZone.directBlurHours(event)">
 
-                                    <button class="ctl-hmsm right" type="button" aria-label="increase hours" onclick="widgetDateTimeZone.controlHours(event, '>')">
+                                    <button class="ctl-hmsm right btrr" type="button" aria-label="increase hours" onclick="widgetDateTimeZone.controlHours(event, '>')">
                                         <i class="angle right icon"></i>
                                     </button>
                                 </div>
@@ -245,7 +245,43 @@
                                     </a>
                                 </div>
                             </div>
-                            time zone
+                            <div class="select-time-zone">
+                                <div id="wrap-timezone-buttons" class="wrap-selection-buttons wrap-buttons-slidedown">
+                                    <button id="timezone-area" class="ctl-tz top btlr btrr">
+                                        <span id="timezone-area-label"></span>
+                                        <span class="label">Area</span>
+                                    </button>
+                                    <button id="timezone-location" class="ctl-tz bottom bblr bbrr">
+                                        <span id="timezone-location-label"></span>
+                                        <span class="label">Location</span>
+                                    </button>
+                                </div>
+                                <div class="wrap-areas-locations">
+                                    <div id="areas" class="contain-areas hide">
+                                        <div class="ui icon input search-areas">
+                                            <input id="search-area" onkeyup="myMoment.filterListAreas(event)" type="text" placeholder="Search Areas...">
+                                            <i id="search-area-icon" class="search link icon" role="button" aria-hidden="true" data-type="search"></i>
+                                        </div>
+                                        <div class="contain-tz-list">
+                                            <ul id="list-areas" class="list-areas">
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div id="locations" class="contain-locations hide">
+                                        <div class="ui icon input search-locations">
+                                            <input id="search-location" onkeyup="myMoment.filterListLocations(event)" type="text" placeholder="Search Locations...">
+                                            <i id="search-location-icon" class="search link icon" role="button" aria-hidden="true" data-type="search"></i>
+                                        </div>
+                                        <div class="contain-tz-list">
+                                            <ul id="list-locations" class="list-locations">
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- select-time-zone -->
                         </div>
                     </div>
                 </div>
@@ -255,6 +291,7 @@
 
     <script src="../../node_modules/moment/min/moment.min.js"></script>
     <script src="../../node_modules/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+    <script src="../../node_modules/async/dist/async.min.js"></script>
     <script type="text/javascript" src="index.js"></script>
 </body>
 
