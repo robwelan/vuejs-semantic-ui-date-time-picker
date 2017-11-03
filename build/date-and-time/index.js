@@ -12,17 +12,7 @@ oDateAndOrTime = (function() {
   var eHandMinute;
   var eHandSecond;
   var eHandMillisecond;
-  var dToday = new Date();
-  var dTime = new Date();
-  var nDayOfWeek;
-  var nDayOfMonth;
-  var nMonth;
-  var nYear;
-  var nHour;
-  var nMinute;
-  var nSecond;
-  var nMillisecond;
-  var sMeridiem;
+  
   var aMonthNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   var aMonthStrings = [
     'January',
@@ -82,11 +72,47 @@ oDateAndOrTime = (function() {
   };
 
   var aDayCharacters = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  var nLowestYearLimit = 1900;
-  // Configuration Settings
-  var bIsAllowedDate = false;
-  var bIsAllowedTime = false;
-  var bIsAllowedZone = false;
+
+  // var dToday = new Date();
+  // var dTime = new Date();
+  // var nDayOfWeek;
+  // var nDayOfMonth;
+  // var nMonth;
+  // var nYear;
+  // var nHour;
+  // var nMinute;
+  // var nSecond;
+  // var nMillisecond;
+  // var sMeridiem;
+  // State
+  var state = {
+    default: {
+      date: new Date(),
+      guessTimeZone: moment.tz.guess()
+    },
+    settings: {
+      calendar: {
+        lowestYearLimit: 1900
+      }
+    },
+    values: {
+      calendar: {
+        date: null,
+        dayOfWeek: 0,
+        dayOfMonth: 0,
+        month: 0,
+        year: 0
+      },
+      clock: {
+        time: null,
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+        meridiem: ''
+      }
+    }
+  };
   // Last Thing
   var bIsInitialised = false;
 
@@ -108,18 +134,18 @@ oDateAndOrTime = (function() {
     var nButtonMonth = Number(eTarget.getAttribute('data-month'));
     var nButtonDay = Number(eTarget.getAttribute('data-day'));
     var sButtonYearMonth = nButtonYear.toString() + nButtonMonth.toString();
-    var sYearMonth = nYear.toString() + nMonth.toString();
+    var sYearMonth = state.values.calendar.year.toString() + state.values.calendar.month.toString();
     var bIsBigChange = false;
     if (sButtonYearMonth !== sYearMonth) {
       bIsBigChange = true;
-      nYear = nButtonYear;
-      nMonth = nButtonMonth;
+      state.values.calendar.year = nButtonYear;
+      state.values.calendar.month = nButtonMonth;
     }
-    nDayOfMonth = nButtonDay;
+    state.values.calendar.dayOfMonth = nButtonDay;
     if (bIsBigChange === true) {
       // re-write cal
-      changeCalendarControls(nYear, nMonth, nDayOfMonth);
-      writeDays(nYear, nMonth);
+      changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+      writeDays(state.values.calendar.year, state.values.calendar.month);
     } else {
       // change selected day
       var buttons = document.getElementsByClassName('ctl-day');
@@ -148,19 +174,19 @@ oDateAndOrTime = (function() {
     eInputYear.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        nYear = Number(eInputYear.value);
+        state.values.calendar.year = Number(eInputYear.value);
         fixMonthInput();
-        changeCalendarControls(nYear, nMonth, nDayOfMonth);
-        writeDays(nYear, nMonth);
+        changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+        writeDays(state.values.calendar.year, state.values.calendar.month);
       }
     });
     eInputMonth.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        nMonth = Number(eInputMonth.value - 1);
+        state.values.calendar.month = Number(eInputMonth.value - 1);
         fixMonthInput();
-        changeCalendarControls(nYear, nMonth, nDayOfMonth);
-        writeDays(nYear, nMonth);
+        changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+        writeDays(state.values.calendar.year, state.values.calendar.month);
       }
     });
   }
@@ -182,41 +208,41 @@ oDateAndOrTime = (function() {
     eInputHour.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputHour, nHour, 'hour') === false) {
+        if (isDifferentTime(eInputHour, state.values.clock.hour, 'hour') === false) {
           return;
         }
         fixHoursInput();
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
     eInputMinute.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputMinute, nMinute, '') === false) {
+        if (isDifferentTime(eInputMinute, state.values.clock.minute, '') === false) {
           return;
         }
         fixMinutesOrSecondsInput('minutes');
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
     eInputSecond.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputSecond, nSecond, '') === false) {
+        if (isDifferentTime(eInputSecond, state.values.clock.second, '') === false) {
           return;
         }
         fixMinutesOrSecondsInput('seconds');
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
     eInputMillisecond.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputMillisecond, nMillisecond, '') === false) {
+        if (isDifferentTime(eInputMillisecond, state.values.clock.millisecond, '') === false) {
           return;
         }
         fixMillisecondsInput();
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
   }
@@ -253,34 +279,34 @@ oDateAndOrTime = (function() {
   }
 
   function setDateNumbers(d) {
-    nDayOfWeek = d.getDay();
-    nDayOfMonth = d.getDate();
-    nMonth = d.getMonth();
-    nYear = d.getFullYear();
+    state.values.calendar.dayOfWeek = d.getDay();
+    state.values.calendar.dayOfMonth = d.getDate();
+    state.values.calendar.month = d.getMonth();
+    state.values.calendar.year = d.getFullYear();
   }
 
   function rotateHands() {
-    var nRotateHour = nHour;
+    var nRotateHour = state.values.clock.hour;
 
     nRotateHour = nRotateHour % 12;
     nRotateHour = nRotateHour ? nRotateHour : 12; // the hour '0' should be '12'
 
     eHandHour.style.transform =
-      'rotate(' + (nRotateHour * 30 + nMinute / 2) + 'deg)';
-    eHandMinute.style.transform = 'rotate(' + nMinute * 6 + 'deg)';
-    eHandSecond.style.transform = 'rotate(' + nSecond * 6 + 'deg)';
+      'rotate(' + (nRotateHour * 30 + state.values.clock.minute / 2) + 'deg)';
+    eHandMinute.style.transform = 'rotate(' + state.values.clock.minute * 6 + 'deg)';
+    eHandSecond.style.transform = 'rotate(' + state.values.clock.second * 6 + 'deg)';
     eHandMillisecond.style.transform =
-      'rotate(' + Math.floor(nMillisecond / 1000 * 360) + 'deg)';
+      'rotate(' + Math.floor(state.values.clock.millisecond / 1000 * 360) + 'deg)';
   }
 
   function setTimeNumbers(t) {
-    nHour = t.getHours();
-    nMinute = t.getMinutes();
-    nSecond = t.getSeconds();
-    nMillisecond = t.getMilliseconds();
-    sMeridiem = nHour >= 12 ? 'pm' : 'am';
+    state.values.clock.hour = t.getHours();
+    state.values.clock.minute = t.getMinutes();
+    state.values.clock.second = t.getSeconds();
+    state.values.clock.millisecond = t.getMilliseconds();
+    state.values.clock.meridiem = state.values.clock.hour >= 12 ? 'pm' : 'am';
 
-    if (sMeridiem === 'am') {
+    if (state.values.clock.meridiem === 'am') {
       eButtonPM.classList.remove('active');
       eButtonAM.classList.add('active');
     } else {
@@ -292,7 +318,7 @@ oDateAndOrTime = (function() {
 
   function isDifferentYear() {
     var nTemp = Number(eInputYear.value);
-    if (nTemp !== Number(nYear) || eInputYear.value === '') {
+    if (nTemp !== Number(state.values.calendar.year) || eInputYear.value === '') {
       return true;
     } else {
       return false;
@@ -301,7 +327,7 @@ oDateAndOrTime = (function() {
 
   function isDifferentMonth() {
     var nTemp = Number(eInputMonth.value) - 1;
-    if (nTemp !== Number(nMonth) || eInputMonth.value === '') {
+    if (nTemp !== Number(state.values.calendar.month) || eInputMonth.value === '') {
       return true;
     } else {
       return false;
@@ -311,7 +337,7 @@ oDateAndOrTime = (function() {
   function isDifferentTime(eT, nT, sSpecial) {
     var nTemp = Number(eT.value);
     if (sSpecial === 'hour') {
-      if (sMeridiem === 'pm') {
+      if (state.values.clock.meridiem === 'pm') {
         nTemp += 12;
       }
     }
@@ -358,35 +384,35 @@ oDateAndOrTime = (function() {
   function handleYM(event, sField, sCommand) {
     if (sField === 'y') {
       if (sCommand === '<') {
-        nYear -= 1;
-        if (nYear < nLowestYearLimit) {
-          nYear = nLowestYearLimit;
+        state.values.calendar.year -= 1;
+        if (state.values.calendar.year < state.settings.calendar.lowestYearLimit) {
+          state.values.calendar.year = state.settings.calendar.lowestYearLimit;
         }
         //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
       }
       if (sCommand === '>') {
-        nYear += 1;
+        state.values.calendar.year += 1;
         //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
       }
     }
     if (sField === 'm') {
       if (sCommand === '<') {
-        nMonth -= 1;
-        if (nMonth < 0) {
-          nMonth = 12 - 1;
+        state.values.calendar.month -= 1;
+        if (state.values.calendar.month < 0) {
+          state.values.calendar.month = 12 - 1;
         }
         //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
       }
       if (sCommand === '>') {
-        nMonth += 1;
-        if (nMonth > 12 - 1) {
-          nMonth = 0;
+        state.values.calendar.month += 1;
+        if (state.values.calendar.month > 12 - 1) {
+          state.values.calendar.month = 0;
         }
-        //        changeCalendarControls(nYear, nMonth, nDayOfMonth);
+        //        changeCalendarControls(nYear, nMonth, state.values.calendar.dayOfMonth);
       }
     }
-    changeCalendarControls(nYear, nMonth, nDayOfMonth);
-    writeDays(nYear, nMonth);
+    changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   function handleYear(event, sCommand) {
@@ -400,74 +426,74 @@ oDateAndOrTime = (function() {
   function handleHMSM(event, sField, sCommand) {
     if (sField === 'hr') {
       if (sCommand === '<') {
-        nHour -= 1;
-        if (nHour < 0) {
-          nHour = 23;
+        state.values.clock.hour -= 1;
+        if (state.values.clock.hour < 0) {
+          state.values.clock.hour = 23;
         }
       }
       if (sCommand === '>') {
-        nHour += 1;
-        if (nHour > 23) {
-          nHour = 0;
+        state.values.clock.hour += 1;
+        if (state.values.clock.hour > 23) {
+          state.values.clock.hour = 0;
         }
       }
     }
     if (sField === 'mn') {
       if (sCommand === '<') {
-        nMinute -= 1;
-        if (nMinute < 0) {
-          nMinute = 59;
+        state.values.clock.minute -= 1;
+        if (state.values.clock.minute < 0) {
+          state.values.clock.minute = 59;
         }
       }
       if (sCommand === '>') {
-        nMinute += 1;
-        if (nMinute > 59) {
-          nMinute = 0;
+        state.values.clock.minute += 1;
+        if (state.values.clock.minute > 59) {
+          state.values.clock.minute = 0;
         }
       }
     }
     if (sField === 'ss') {
       if (sCommand === '<') {
-        nSecond -= 1;
-        if (nSecond < 0) {
-          nSecond = 59;
+        state.values.clock.second -= 1;
+        if (state.values.clock.second < 0) {
+          state.values.clock.second = 59;
         }
       }
       if (sCommand === '>') {
-        nSecond += 1;
-        if (nSecond > 59) {
-          nSecond = 0;
+        state.values.clock.second += 1;
+        if (state.values.clock.second > 59) {
+          state.values.clock.second = 0;
         }
       }
     }
     if (sField === 'ms') {
       if (sCommand === '<') {
-        nMillisecond -= 1;
-        if (nMillisecond < 0) {
-          nMillisecond = 999;
+        state.values.clock.millisecond -= 1;
+        if (state.values.clock.millisecond < 0) {
+          state.values.clock.millisecond = 999;
         }
       }
       if (sCommand === '>') {
-        nMillisecond += 1;
-        if (nMillisecond > 999) {
-          nMillisecond = 0;
+        state.values.clock.millisecond += 1;
+        if (state.values.clock.millisecond > 999) {
+          state.values.clock.millisecond = 0;
         }
       }
     }
     if (sField === 'ampm') {
-      if (sMeridiem === sCommand) {
+      if (state.values.clock.meridiem === sCommand) {
         return; // already set
       }
       if (sCommand === 'am') {
-        sMeridiem = 'am';
-        nHour -= 12;
+        state.values.clock.meridiem = 'am';
+        state.values.clock.hour -= 12;
       }
       if (sCommand === 'pm') {
-        sMeridiem = 'pm';
-        nHour += 12;
+        state.values.clock.meridiem = 'pm';
+        state.values.clock.hour += 12;
       }
     }
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function handleHours(event, sCommand) {
@@ -494,12 +520,12 @@ oDateAndOrTime = (function() {
     var bNeedsFix = false;
     var nTemp = Number(eInputYear.value);
 
-    if (nTemp < nLowestYearLimit || eInputYear.value === '') {
-      nYear = nLowestYearLimit;
+    if (nTemp < state.settings.calendar.lowestYearLimit || eInputYear.value === '') {
+      state.values.calendar.year = state.settings.calendar.lowestYearLimit;
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
-      eInputYear.value = nYear;
+      eInputYear.value = state.values.calendar.year;
     }
   }
 
@@ -515,12 +541,12 @@ oDateAndOrTime = (function() {
       nTemp = 0;
       bNeedsFix = true;
     }
-    if (nTemp.toString() !== nMonth.toString()) {
+    if (nTemp.toString() !== state.values.calendar.month.toString()) {
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
       eInputMonth.value = nTemp;
-      nMonth = nTemp;
+      state.values.calendar.month = nTemp;
     }
   }
 
@@ -529,16 +555,16 @@ oDateAndOrTime = (function() {
       return;
     }
     if (eInputYear.value === '') {
-      nYear = nLowestYearLimit;
+      state.values.calendar.year = state.settings.calendar.lowestYearLimit;
     } else {
-      nYear = Number(eInputYear.value);
+      state.values.calendar.year = Number(eInputYear.value);
     }
-    if (nYear < nLowestYearLimit) {
-      nYear = nLowestYearLimit;
+    if (state.values.calendar.year < state.settings.calendar.lowestYearLimit) {
+      state.values.calendar.year = state.settings.calendar.lowestYearLimit;
     }
     fixYearInput();
-    changeCalendarControls(nYear, nMonth, nDayOfMonth);
-    writeDays(nYear, nMonth);
+    changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   function directBlurMonth(e) {
@@ -546,8 +572,8 @@ oDateAndOrTime = (function() {
       return;
     }
     fixMonthInput();
-    changeCalendarControls(nYear, nMonth, nDayOfMonth);
-    writeDays(nYear, nMonth);
+    changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   function fixHoursInput() {
@@ -562,15 +588,15 @@ oDateAndOrTime = (function() {
       nTemp = 1;
       bNeedsFix = true;
     }
-    if (nTemp.toString() !== nHour.toString()) {
+    if (nTemp.toString() !== state.values.clock.hour.toString()) {
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
       eInputHour.value = nTemp;
-      if (sMeridiem === 'pm') {
-        nHour = nTemp + 12;
+      if (state.values.clock.meridiem === 'pm') {
+        state.values.clock.hour = nTemp + 12;
       } else {
-        nHour = nTemp;
+        state.values.clock.hour = nTemp;
       }
     }
   }
@@ -581,11 +607,11 @@ oDateAndOrTime = (function() {
     var nValue;
     if (sType === 'minutes') {
       nTemp = Number(eInputMinute.value);
-      nValue = nMinute;
+      nValue = state.values.clock.minute;
     }
     if (sType === 'seconds') {
       nTemp = Number(eInputSecond.value);
-      nValue = nSecond;
+      nValue = state.values.clock.second;
     }
     
     if (nTemp > 59) {
@@ -602,11 +628,11 @@ oDateAndOrTime = (function() {
     if (bNeedsFix === true) {
       if (sType === 'minutes') {
         eInputMinute.value = nTemp;
-        nMinute = nTemp;
+        state.values.clock.minute = nTemp;
       }
       if (sType === 'seconds') {
         eInputSecond.value = nTemp;
-        nSecond = nTemp;
+        state.values.clock.second = nTemp;
       }
     }
   }
@@ -623,70 +649,70 @@ oDateAndOrTime = (function() {
       nTemp = 0;
       bNeedsFix = true;
     }
-    if (nTemp.toString() !== nMillisecond.toString()) {
+    if (nTemp.toString() !== state.values.clock.millisecond.toString()) {
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
       eInputMillisecond.value = nTemp;
-      nMillisecond = nTemp;
+      state.values.clock.millisecond = nTemp;
     }    
   }
 
   function directBlurHours(e) {
-    if (isDifferentTime(eInputHour, nHour, 'hour') === false) {
+    if (isDifferentTime(eInputHour, state.values.clock.hour, 'hour') === false) {
       return;
     }
     fixHoursInput();
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function directBlurMinutes(e) {
-    if (isDifferentTime(eInputMinute, nMinute, '') === false) {
+    if (isDifferentTime(eInputMinute, state.values.clock.minute, '') === false) {
       return;
     }
     fixMinutesOrSecondsInput('minutes');
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function directBlurSeconds(e) {
-    if (isDifferentTime(eInputSecond, nSecond, '') === false) {
+    if (isDifferentTime(eInputSecond, state.values.clock.second, '') === false) {
       return;
     }
     fixMinutesOrSecondsInput('seconds');
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function directBlurMilliseconds(e) {
-    if (isDifferentTime(eInputMillisecond, nMillisecond, '') === false) {
+    if (isDifferentTime(eInputMillisecond, state.values.clock.millisecond, '') === false) {
       return;
     }
     fixMillisecondsInput();
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function changeCalendarControls(nY, nM, nD) {
     if (isValidDate(nY, nM, nD)) {
-      dToday = new Date(nY, nM, nD);
+      state.values.calendar.date = new Date(nY, nM, nD);
     } else {
-      dToday = new Date();
+      state.values.calendar.date = new Date();
     }
-    setDateNumbers(dToday);
-    changeYear(nYear);
-    changeMonth(nMonth);
-    changeDay(nDayOfMonth, nDayOfWeek);
+    setDateNumbers(state.values.calendar.date);
+    changeYear(state.values.calendar.year);
+    changeMonth(state.values.calendar.month);
+    changeDay(state.values.calendar.dayOfMonth, state.values.calendar.dayOfWeek);
   }
 
   function changeTimeControls(nHr, nMn, nSs, nMs, sM) {
     if (isValidTime(nHr, nMn, nSs, nMs)) {
-      dTime = new Date(1970, 1, 1, nHr, nMn, nSs, nMs);
+      state.values.clock.time = new Date(1970, 1, 1, nHr, nMn, nSs, nMs);
     } else {
-      dTime = new Date();
+      state.values.clock.time = new Date();
     }
-    setTimeNumbers(dTime);
-    changeHour(nHour);
-    changeMinute(nMinute);
-    changeSecond(nSecond);
-    changeMillisecond(nMillisecond);
+    setTimeNumbers(state.values.clock.time);
+    changeHour(state.values.clock.hour);
+    changeMinute(state.values.clock.minute);
+    changeSecond(state.values.clock.second);
+    changeMillisecond(state.values.clock.millisecond);
   }
 
   function bindAllowedKeysYear() {
@@ -882,10 +908,10 @@ oDateAndOrTime = (function() {
         if (y === 6) {
           aClasses.push('right');
         }
-        if (o.month !== nMonth) {
+        if (o.month !== state.values.calendar.month) {
           aClasses.push('mute');
         }
-        if (o.year === nYear && o.month === nMonth && o.day === nDayOfMonth) {
+        if (o.year === state.values.calendar.year && o.month === state.values.calendar.month && o.day === state.values.calendar.dayOfMonth) {
           aClasses.push('active');
         }
         if (x === 0) {
@@ -948,12 +974,12 @@ oDateAndOrTime = (function() {
 
   function setToday() {
     // force set to today's date
-    dToday = new Date();
-    setDateNumbers(dToday);
-    changeMonth(nMonth);
-    changeYear(nYear);
-    changeDay(nDayOfMonth, nDayOfWeek);
-    writeDays(nYear, nMonth);
+    state.values.calendar.date = new Date();
+    setDateNumbers(state.values.calendar.date);
+    changeMonth(state.values.calendar.month);
+    changeYear(state.values.calendar.year);
+    changeDay(state.values.calendar.dayOfMonth, state.values.calendar.dayOfWeek);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   function init() {
@@ -964,12 +990,12 @@ oDateAndOrTime = (function() {
     bindAllowedKeysYear();
     bindAllowedKeysMonth();
     listenForEnterOnCalendarInputs();
-    setDateNumbers(dToday);
-    changeMonth(nMonth);
-    changeYear(nYear);
-    changeDay(nDayOfMonth, nDayOfWeek);
+    setDateNumbers(state.default.date);
+    changeMonth(state.values.calendar.month);
+    changeYear(state.values.calendar.year);
+    changeDay(state.values.calendar.dayOfMonth, state.values.calendar.dayOfWeek);
     writeLabels();
-    writeDays(nYear, nMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
     // Time
     eInputHour = window.document.getElementById('input-hour');
     eInputMinute = window.document.getElementById('input-minute');
@@ -986,11 +1012,11 @@ oDateAndOrTime = (function() {
     bindAllowedKeysSecond();
     bindAllowedKeysMillisecond();
     listenForEnterOnTimeInputs();
-    setTimeNumbers(dTime);
-    changeHour(nHour);
-    changeMinute(nMinute);
-    changeSecond(nSecond);
-    changeMillisecond(nMillisecond);
+    setTimeNumbers(state.default.date);
+    changeHour(state.values.clock.hour);
+    changeMinute(state.values.clock.minute);
+    changeSecond(state.values.clock.second);
+    changeMillisecond(state.values.clock.millisecond);
     // Are We Done?
     bIsInitialised = true;
   }

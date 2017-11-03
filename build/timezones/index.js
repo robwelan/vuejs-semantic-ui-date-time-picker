@@ -9,8 +9,12 @@ var suiMoment = (function() {
   var eListLocations = window.document.getElementById('list-locations');
   var eTimezoneArea = window.document.getElementById('timezone-area');
   var eTimezoneLocation = window.document.getElementById('timezone-location');
-  var eTimezoneAreaLabel = window.document.getElementById('timezone-area-label');
-  var eTimezoneLocationLabel = window.document.getElementById('timezone-location-label');
+  var eTimezoneAreaLabel = window.document.getElementById(
+    'timezone-area-label'
+  );
+  var eTimezoneLocationLabel = window.document.getElementById(
+    'timezone-location-label'
+  );
   var eSearchArea = window.document.getElementById('search-area');
   var eSearchLocation = window.document.getElementById('search-location');
   var eSearchAreaIcon = window.document.getElementById('search-area-icon');
@@ -19,16 +23,57 @@ var suiMoment = (function() {
   );
   var eButtonsAreas;
   var eButtonsLocations;
-  var aTimeZones = moment.tz.names();
-  var aTimeZoneAreas = [];
-  var oGuessedLocation = {};
-  var sSelectedMomentId = '';
-  var oSelected = {
-    area: SELECTED_AREA,
-    location: SELECTED_LOCATION,
-    moment: ''
-  };
+  //  var aTimeZones = moment.tz.names();
+  //  var aTimeZoneAreas = [];
+  // var oGuessedLocation = {};
+  // var sSelectedMomentId = '';
+  // var oSelected = {
+  //   area: SELECTED_AREA,
+  //   location: SELECTED_LOCATION,
+  //   moment: ''
+  // };
   var offsetTmz = [];
+  var state = {
+    default: {
+      date: new Date(),
+      timezone: {
+        guess: moment.tz.guess(),
+        area: '',
+        location: '',
+        isGuessed: false
+      }
+    },
+    settings: {
+      calendar: {
+        lowestYearLimit: 1900
+      },
+      timezone: {
+        listOfAreas: unpackTimeZones()
+      }
+    },
+    values: {
+      calendar: {
+        date: null,
+        dayOfWeek: 0,
+        dayOfMonth: 0,
+        month: 0,
+        year: 0
+      },
+      clock: {
+        time: null,
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+        meridiem: ''
+      },
+      timezone: {
+        area: SELECTED_AREA,
+        location: SELECTED_LOCATION,
+        moment: ''
+      }
+    }
+  };
 
   function waterfallEmpty() {}
 
@@ -64,7 +109,7 @@ var suiMoment = (function() {
 
   function outputPointyEnd(sFromWhere) {
     console.log('From Where:', sFromWhere);
-    console.log('selected', oSelected);
+    console.log('selected', state);
   }
 
   function filterListOff(eList, eSearch, eIcon) {
@@ -206,7 +251,7 @@ var suiMoment = (function() {
         aButtonClasses.push('br');
       }
 
-      if (oGuessedLocation.area.toLowerCase() === sLIlc) {
+      if (state.default.timezone.area.toLowerCase() === sLIlc) {
         aButtonClasses.push('active');
       }
 
@@ -250,9 +295,9 @@ var suiMoment = (function() {
     var oNow = moment();
     var res = [];
 
-    if (oGuessedLocation.isGuessed === true && bForceAll === false) {
+    if (state.default.timezone.isGuessed === true && bForceAll === false) {
       res = aP.filter(function(x) {
-        if (x.sZoneParent === oSelected.area) {
+        if (x.sZoneParent === state.values.timezone.area) {
           return x;
         }
       });
@@ -304,7 +349,8 @@ var suiMoment = (function() {
       }
 
       if (
-        oSelected.location.toLowerCase() === res[i].sZoneChild.toLowerCase()
+        state.values.timezone.location.toLowerCase() ===
+        res[i].sZoneChild.toLowerCase()
       ) {
         aButtonClasses.push('active');
       }
@@ -346,7 +392,8 @@ var suiMoment = (function() {
   }
 
   function unpackTimeZones() {
-    aTimeZoneAreas = aTimeZones
+    return moment.tz
+      .names()
       .map(function(s) {
         if (s.indexOf('/') > -1) {
           var sZoneParent = s.substr(0, s.indexOf('/'));
@@ -394,53 +441,47 @@ var suiMoment = (function() {
   }
 
   function getAsyncTZs() {
-    unpackTimeZones();
-
     var other = '';
-    var sGuess = moment.tz.guess();
+  //  var sGuess = moment.tz.guess();
 
-    oSelected.area = SELECTED_AREA;
-    oSelected.location = SELECTED_LOCATION;
+    state.values.timezone.area = SELECTED_AREA;
+    state.values.timezone.location = SELECTED_LOCATION;
 
-    if (typeof sGuess != 'undefined') {
-      oGuessedLocation = {
-        moment: sGuess,
-        area: returnZoneParent(sGuess),
-        location: returnZoneChild(sGuess).raw,
-        isGuessed: true
-      };
+    if (typeof state.default.timezone.guess != 'undefined') {
+      state.default.timezone.moment = state.default.timezone.guess;
+      state.default.timezone.area = returnZoneParent(state.default.timezone.guess);
+      state.default.timezone.location = returnZoneChild(state.default.timezone.guess).raw;
+      state.default.timezone.isGuessed = true;
 
-      setLabelArea(oGuessedLocation.area);
-      setLabelLocation(oGuessedLocation.location);
-      oSelected.moment = sGuess;
+      setLabelArea(state.default.timezone.area);
+      setLabelLocation(state.default.timezone.location);
+      state.values.timezone.moment = state.default.timezone.guess;
     } else {
-      oGuessedLocation = {
-        moment: sGuess,
-        area: oSelected.area,
-        location: oSelected.location,
-        isGuessed: false
-      };
+      state.default.timezone.moment = state.default.timezone.guess;
+      state.default.timezone.area = state.values.timezone.area;
+      state.default.timezone.location = state.values.timezone.location;
+      state.default.timezone.isGuessed = false;
 
-      setLabelArea(oSelected.area);
-      setLabelLocation(oSelected.location);
+      setLabelArea(state.values.timezone.area);
+      setLabelLocation(state.values.timezone.location);
     }
 
     var oZoneChildTemp;
     var sTimeZoneTemp;
-    for (var i in aTimeZones) {
+    for (var i in moment.tz.names()) {
       oZoneChildTemp = null;
-      oZoneChildTemp = returnZoneChild(aTimeZones[i]);
+      oZoneChildTemp = returnZoneChild(moment.tz.names()[i]);
 
       if (oZoneChildTemp.hasID === true) {
-        sTimeZoneTemp = moment.tz(aTimeZones[i]).format('Z');
+        sTimeZoneTemp = moment.tz(moment.tz.names()[i]).format('Z');
         offsetTmz.push({
-          sZoneParent: returnZoneParent(aTimeZones[i]),
+          sZoneParent: returnZoneParent(moment.tz.names()[i]),
           sZoneChild: oZoneChildTemp.raw,
           sZoneChildUI: oZoneChildTemp.formatted,
           bHasID: oZoneChildTemp.hasID,
-          timeZoneId: aTimeZones[i],
+          timeZoneId: moment.tz.names()[i],
           timeZone: sTimeZoneTemp,
-          timeZoneAbbreviation: moment.tz(aTimeZones[i]).format('z'),
+          timeZoneAbbreviation: moment.tz(moment.tz.names()[i]).format('z'),
           timeZoneLabel: 'GMT' + sTimeZoneTemp.toString(),
           locationSearchString:
             oZoneChildTemp.formatted + 'GMT' + sTimeZoneTemp.toString()
@@ -450,7 +491,7 @@ var suiMoment = (function() {
 
     async.waterfall([
       waterfallEmpty,
-      createListAreas(aTimeZoneAreas),
+      createListAreas(state.settings.timezone.listOfAreas),
       createListLocations(offsetTmz, false),
       addListeners(),
       listenerClickLocations(eButtonsLocations)
@@ -478,9 +519,9 @@ var suiMoment = (function() {
     setDefaultsForButtons();
     removeListenerClickLocations(eButtonsLocations);
 
-    oSelected.area = btnAttribute;
-    oSelected.location = SELECTED_LOCATION;
-    oSelected.moment = '';
+    state.values.timezone.area = btnAttribute;
+    state.values.timezone.location = SELECTED_LOCATION;
+    state.values.timezone.moment = '';
 
     if (btnAttribute !== 'All Locations') {
       createListLocations(offsetTmz, false);
@@ -520,7 +561,7 @@ var suiMoment = (function() {
   }
 
   function setMomentInTime(sId) {
-    oSelected.moment = sId;
+    state.values.timezone.moment = sId;
   }
 
   function onClickButtonLocation(event) {
@@ -528,8 +569,8 @@ var suiMoment = (function() {
     var attributeLocation = this.getAttribute('data-location');
     var attributeLocationUI = this.getAttribute('data-location-ui');
     var attributeIdentifier = this.getAttribute('data-tzid');
-    var sLastArea = oSelected.area.toLowerCase();
-    var sLastLocation = oSelected.location.toLowerCase();
+    var sLastArea = state.values.timezone.area.toLowerCase();
+    var sLastLocation = state.values.timezone.location.toLowerCase();
 
     setDefaultsForButtons();
 
@@ -558,9 +599,9 @@ var suiMoment = (function() {
 
       setLabelArea(SELECTED_AREA);
       setLabelLocation(SELECTED_LOCATION);
-      oSelected.moment = '';
+      state.values.timezone.moment = '';
     } else if (attributeArea === 'All Locations') {
-      oSelected.moment = '';
+      state.values.timezone.moment = '';
 
       if (sLastLocation !== 'choose location...') {
         async.waterfall([
@@ -579,7 +620,10 @@ var suiMoment = (function() {
         ]);
       } else {
         if (sLastArea !== 'all locations') {
-          if (sLastArea === 'choose area...' && sLastLocation === 'choose location...') {
+          if (
+            sLastArea === 'choose area...' &&
+            sLastLocation === 'choose location...'
+          ) {
             // do nothing
           } else {
             async.waterfall([
@@ -602,7 +646,7 @@ var suiMoment = (function() {
     } else {
       eWrapButtons.classList.remove('hide');
       animateWrapButtonsIn();
-      
+
       setLabelArea(attributeArea);
       setLabelLocation(attributeLocationUI);
 
@@ -743,12 +787,12 @@ var suiMoment = (function() {
 
   function setLabelArea(sArea) {
     eTimezoneAreaLabel.textContent = sArea;
-    oSelected.area = sArea;
+    state.values.timezone.area = sArea;
   }
 
   function setLabelLocation(sLocation) {
     eTimezoneLocationLabel.textContent = sLocation;
-    oSelected.location = sLocation;
+    state.values.timezone.location = sLocation;
   }
 
   function addListeners() {
@@ -762,8 +806,8 @@ var suiMoment = (function() {
   }
 
   function init() {
-    setLabelArea(oSelected.area);
-    setLabelLocation(oSelected.location);
+    setLabelArea(state.values.timezone.area);
+    setLabelLocation(state.values.timezone.location);
     getAsyncTZs();
   }
 

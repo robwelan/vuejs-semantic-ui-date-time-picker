@@ -21,11 +21,6 @@ widgetDateTimeZone = (function() {
   var eInputYear;
   var eInputMonth;
   var eCalDays;
-  var dToday = new Date();
-  var nDayOfWeek;
-  var nDayOfMonth;
-  var nMonth;
-  var nYear;
   var aMonthNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   var aMonthStrings = [
     'January',
@@ -84,7 +79,6 @@ widgetDateTimeZone = (function() {
     31: 'thirty first'
   };
   var aDayCharacters = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  var nLowestYearLimit = 1900;
   // Clock Variables
   var eRowSeconds;
   var eRowMilliseconds;
@@ -98,16 +92,6 @@ widgetDateTimeZone = (function() {
   var eHandMinute;
   var eHandSecond;
   var eHandMillisecond;
-  var dTime = new Date();
-  var nHour;
-  var nMinute;
-  var nSecond;
-  var nMillisecond;
-  var sMeridiem;
-  // UI Variables
-  // Clock
-  var bShowSeconds = false;
-  var bShowMilliseconds = false;
   /* Time Zones */
   var SELECTED_AREA = 'Choose Area...';
   var SELECTED_LOCATION = 'Choose Location...';
@@ -126,20 +110,56 @@ widgetDateTimeZone = (function() {
   var eSearchLocationIcon;
   var eButtonsAreas;
   var eButtonsLocations;
-  var aTimeZones = moment.tz.names();
-  var aTimeZoneAreas = [];
-  var oGuessedLocation = {};
-  var sSelectedMomentId = '';
-  var oSelected = {
-    area: SELECTED_AREA,
-    location: SELECTED_LOCATION,
-    moment: ''
-  };
   var offsetTmz = [];
+
   // Shared Variables
-  var sTimezoneGuess = moment.tz.guess();
-  // Last Thing
-  var bIsInitialized = false;
+  var state = {
+    initialized: false,
+    default: {
+      date: new Date(),
+      timezone: {
+        guess: moment.tz.guess(),
+        area: '',
+        location: ''
+      }
+    },
+    settings: {
+      calendar: {
+        lowestYearLimit: 1900
+      },
+      clock: {
+        show: {
+          seconds: false,
+          milliseconds: false
+        }
+      },
+      timezone: {
+        listOfAreas: unpackTimeZones()
+      }
+    },
+    values: {
+      calendar: {
+        date: null,
+        dayOfWeek: 0,
+        dayOfMonth: 0,
+        month: 0,
+        year: 0
+      },
+      clock: {
+        time: null,
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+        meridiem: ''
+      },
+      timezone: {
+       area: SELECTED_AREA,
+       location: SELECTED_LOCATION,
+       moment: ''
+      }
+    }
+  };
 
   // Shared Functions
   function waterfallEmpty() {}
@@ -270,20 +290,20 @@ widgetDateTimeZone = (function() {
     // Start building time:
     s = sH + ':' + sM;
 
-    if (bShowSeconds === true) {
+    if (state.settings.clock.show.seconds === true) {
       s = s + ':' + sS;
-      if (bShowMilliseconds === true) {
+      if (state.settings.clock.show.milliseconds === true) {
         s = s + '.' + sMi;
       }
     }
 
     // Force value of seconds and milliseconds to zero if they are not to be displayed
-    if (bShowSeconds === false) {
-      nSecond = 0;
-      nMillisecond = 0;
+    if (state.settings.clock.show.seconds === false) {
+      state.values.clock.second = 0;
+      state.values.clock.millisecond = 0;
     }
-    if (bShowMilliseconds === false) {
-      nMillisecond = 0;
+    if (state.settings.clock.show.milliseconds === false) {
+      state.values.clock.millisecond = 0;
     }
 
     s = s + meridiem;
@@ -292,7 +312,7 @@ widgetDateTimeZone = (function() {
   }
 
   function defaultTimezone() {
-    var s = sTimezoneGuess;
+    var s = state.default.timezone.guess;
 
     return s;
   }
@@ -409,42 +429,42 @@ widgetDateTimeZone = (function() {
 
   function changeCalendarControls(nY, nM, nD) {
     if (isValidDate(nY, nM, nD)) {
-      dToday = new Date(nY, nM, nD);
+      state.values.calendar.date = new Date(nY, nM, nD);
     } else {
-      dToday = new Date();
+      state.values.calendar.date = new Date();
     }
-    setDateNumbers(dToday);
-    changeYear(nYear);
-    changeMonth(nMonth);
-    changeDay(nDayOfMonth, nDayOfWeek);
+    setDateNumbers(state.values.calendar.date);
+    changeYear(state.values.calendar.year);
+    changeMonth(state.values.calendar.month);
+    changeDay(state.values.calendar.dayOfMonth, state.values.calendar.dayOfWeek);
   }
 
   function listenForEnterOnCalendarInputs() {
     eInputYear.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        nYear = Number(eInputYear.value);
+        state.values.calendar.year = Number(eInputYear.value);
         fixMonthInput();
-        changeCalendarControls(nYear, nMonth, nDayOfMonth);
-        writeDays(nYear, nMonth);
+        changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+        writeDays(state.values.calendar.year, state.values.calendar.month);
       }
     });
     eInputMonth.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        nMonth = Number(eInputMonth.value - 1);
+        state.values.calendar.month = Number(eInputMonth.value - 1);
         fixMonthInput();
-        changeCalendarControls(nYear, nMonth, nDayOfMonth);
-        writeDays(nYear, nMonth);
+        changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+        writeDays(state.values.calendar.year, state.values.calendar.month);
       }
     });
   }
 
   function setDateNumbers(d) {
-    nDayOfWeek = d.getDay();
-    nDayOfMonth = d.getDate();
-    nMonth = d.getMonth();
-    nYear = d.getFullYear();
+    state.values.calendar.dayOfWeek = d.getDay();
+    state.values.calendar.dayOfMonth = d.getDate();
+    state.values.calendar.month = d.getMonth();
+    state.values.calendar.year = d.getFullYear();
   }
 
   function changeYear(n) {
@@ -491,18 +511,18 @@ widgetDateTimeZone = (function() {
     var nButtonMonth = Number(eTarget.getAttribute('data-month'));
     var nButtonDay = Number(eTarget.getAttribute('data-day'));
     var sButtonYearMonth = nButtonYear.toString() + nButtonMonth.toString();
-    var sYearMonth = nYear.toString() + nMonth.toString();
+    var sYearMonth = state.values.calendar.year.toString() + state.values.calendar.month.toString();
     var bIsBigChange = false;
     if (sButtonYearMonth !== sYearMonth) {
       bIsBigChange = true;
-      nYear = nButtonYear;
-      nMonth = nButtonMonth;
+      state.values.calendar.year = nButtonYear;
+      state.values.calendar.month = nButtonMonth;
     }
-    nDayOfMonth = nButtonDay;
+    state.values.calendar.dayOfMonth = nButtonDay;
     if (bIsBigChange === true) {
       // re-write cal
-      changeCalendarControls(nYear, nMonth, nDayOfMonth);
-      writeDays(nYear, nMonth);
+      changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+      writeDays(state.values.calendar.year, state.values.calendar.month);
 //      closeUICalendar();
     } else {
       // change selected day
@@ -515,7 +535,7 @@ widgetDateTimeZone = (function() {
       }
       eTarget.classList.add('active');
 
-      var dSelected = new Date(nYear, nMonth, nDayOfMonth);
+      var dSelected = new Date(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
       writeControlPanelShortDate(getShortDateString(dSelected));
 //      closeUICalendar();
     }
@@ -535,7 +555,7 @@ widgetDateTimeZone = (function() {
   }
 
   function writeDays(nY, nM) {
-    if (bIsInitialized === true) {
+    if (state.initialized === true) {
       // remove the button click listeners
       ignoreForButtonClicksOnDays();
     }
@@ -593,10 +613,10 @@ widgetDateTimeZone = (function() {
         if (y === 6) {
           aClasses.push('right');
         }
-        if (o.month !== nMonth) {
+        if (o.month !== state.values.calendar.month) {
           aClasses.push('mute');
         }
-        if (o.year === nYear && o.month === nMonth && o.day === nDayOfMonth) {
+        if (o.year === state.values.calendar.year && o.month === state.values.calendar.month && o.day === state.values.calendar.dayOfMonth) {
           aClasses.push('active');
         }
         if (x === 0) {
@@ -656,38 +676,38 @@ widgetDateTimeZone = (function() {
     // this listen event must run after Days are written to UI.
     listenForButtonClicksOnDays();
 
-    var dSelected = new Date(nYear, nMonth, nDayOfMonth);
+    var dSelected = new Date(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
     writeControlPanelShortDate(getShortDateString(dSelected));
   }
 
   function handleYM(event, sField, sCommand) {
     if (sField === 'y') {
       if (sCommand === '<') {
-        nYear -= 1;
-        if (nYear < nLowestYearLimit) {
-          nYear = nLowestYearLimit;
+        state.values.calendar.year -= 1;
+        if (state.values.calendar.year < state.settings.calendar.lowestYearLimit) {
+          state.values.calendar.year = state.settings.calendar.lowestYearLimit;
         }
       }
       if (sCommand === '>') {
-        nYear += 1;
+        state.values.calendar.year += 1;
       }
     }
     if (sField === 'm') {
       if (sCommand === '<') {
-        nMonth -= 1;
-        if (nMonth < 0) {
-          nMonth = 12 - 1;
+        state.values.calendar.month -= 1;
+        if (state.values.calendar.month < 0) {
+          state.values.calendar.month = 12 - 1;
         }
       }
       if (sCommand === '>') {
-        nMonth += 1;
-        if (nMonth > 12 - 1) {
-          nMonth = 0;
+        state.values.calendar.month += 1;
+        if (state.values.calendar.month > 12 - 1) {
+          state.values.calendar.month = 0;
         }
       }
     }
-    changeCalendarControls(nYear, nMonth, nDayOfMonth);
-    writeDays(nYear, nMonth);
+    changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   function handleYear(event, sCommand) {
@@ -700,7 +720,7 @@ widgetDateTimeZone = (function() {
 
   function isDifferentYear() {
     var nTemp = Number(eInputYear.value);
-    if (nTemp !== Number(nYear) || eInputYear.value === '') {
+    if (nTemp !== Number(state.values.calendar.year) || eInputYear.value === '') {
       return true;
     } else {
       return false;
@@ -709,7 +729,7 @@ widgetDateTimeZone = (function() {
 
   function isDifferentMonth() {
     var nTemp = Number(eInputMonth.value) - 1;
-    if (nTemp !== Number(nMonth) || eInputMonth.value === '') {
+    if (nTemp !== Number(state.values.calendar.month) || eInputMonth.value === '') {
       return true;
     } else {
       return false;
@@ -720,12 +740,12 @@ widgetDateTimeZone = (function() {
     var bNeedsFix = false;
     var nTemp = Number(eInputYear.value);
 
-    if (nTemp < nLowestYearLimit || eInputYear.value === '') {
-      nYear = nLowestYearLimit;
+    if (nTemp < state.settings.calendar.lowestYearLimit || eInputYear.value === '') {
+      state.values.calendar.year = state.settings.calendar.lowestYearLimit;
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
-      eInputYear.value = nYear;
+      eInputYear.value = state.values.calendar.year;
     }
   }
 
@@ -741,12 +761,12 @@ widgetDateTimeZone = (function() {
       nTemp = 0;
       bNeedsFix = true;
     }
-    if (nTemp.toString() !== nMonth.toString()) {
+    if (nTemp.toString() !== state.values.calendar.month.toString()) {
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
       eInputMonth.value = nTemp;
-      nMonth = nTemp;
+      state.values.calendar.month = nTemp;
     }
   }
 
@@ -755,16 +775,16 @@ widgetDateTimeZone = (function() {
       return;
     }
     if (eInputYear.value === '') {
-      nYear = nLowestYearLimit;
+      state.values.calendar.year = state.settings.calendar.lowestYearLimit;
     } else {
-      nYear = Number(eInputYear.value);
+      state.values.calendar.year = Number(eInputYear.value);
     }
-    if (nYear < nLowestYearLimit) {
-      nYear = nLowestYearLimit;
+    if (state.values.calendar.year < state.settings.calendar.lowestYearLimit) {
+      state.values.calendar.year = state.settings.calendar.lowestYearLimit;
     }
     fixYearInput();
-    changeCalendarControls(nYear, nMonth, nDayOfMonth);
-    writeDays(nYear, nMonth);
+    changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   function directBlurMonth(e) {
@@ -772,18 +792,18 @@ widgetDateTimeZone = (function() {
       return;
     }
     fixMonthInput();
-    changeCalendarControls(nYear, nMonth, nDayOfMonth);
-    writeDays(nYear, nMonth);
+    changeCalendarControls(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   function setToday() {
     // force set to today's date
-    dToday = new Date();
-    setDateNumbers(dToday);
-    changeMonth(nMonth);
-    changeYear(nYear);
-    changeDay(nDayOfMonth, nDayOfWeek);
-    writeDays(nYear, nMonth);
+    state.values.calendar.date = new Date();
+    setDateNumbers(state.values.calendar.date);
+    changeMonth(state.values.calendar.month);
+    changeYear(state.values.calendar.year);
+    changeDay(state.values.calendar.dayOfMonth, state.values.calendar.dayOfWeek);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
   }
 
   // Clock
@@ -824,27 +844,27 @@ widgetDateTimeZone = (function() {
   }
 
   function rotateHands() {
-    var nRotateHour = nHour;
+    var nRotateHour = state.values.clock.hour;
 
     nRotateHour = nRotateHour % 12;
     nRotateHour = nRotateHour ? nRotateHour : 12; // the hour '0' should be '12'
 
     eHandHour.style.transform =
-      'rotate(' + (nRotateHour * 30 + nMinute / 2) + 'deg)';
-    eHandMinute.style.transform = 'rotate(' + nMinute * 6 + 'deg)';
-    eHandSecond.style.transform = 'rotate(' + nSecond * 6 + 'deg)';
+      'rotate(' + (nRotateHour * 30 + state.values.clock.minute / 2) + 'deg)';
+    eHandMinute.style.transform = 'rotate(' + state.values.clock.minute * 6 + 'deg)';
+    eHandSecond.style.transform = 'rotate(' + state.values.clock.second * 6 + 'deg)';
     eHandMillisecond.style.transform =
-      'rotate(' + Math.floor(nMillisecond / 1000 * 360) + 'deg)';
+      'rotate(' + Math.floor(state.values.clock.millisecond / 1000 * 360) + 'deg)';
   }
 
   function setTimeNumbers(t) {
-    nHour = t.getHours();
-    nMinute = t.getMinutes();
-    nSecond = t.getSeconds();
-    nMillisecond = t.getMilliseconds();
-    sMeridiem = nHour >= 12 ? 'pm' : 'am';
+    state.values.clock.hour = t.getHours();
+    state.values.clock.minute = t.getMinutes();
+    state.values.clock.second = t.getSeconds();
+    state.values.clock.millisecond = t.getMilliseconds();
+    state.values.clock.meridiem = state.values.clock.hour >= 12 ? 'pm' : 'am';
 
-    if (sMeridiem === 'am') {
+    if (state.values.clock.meridiem === 'am') {
       eButtonPM.classList.remove('active');
       eButtonAM.classList.add('active');
     } else {
@@ -866,15 +886,15 @@ widgetDateTimeZone = (function() {
       nTemp = 1;
       bNeedsFix = true;
     }
-    if (nTemp.toString() !== nHour.toString()) {
+    if (nTemp.toString() !== state.values.clock.hour.toString()) {
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
       eInputHour.value = nTemp;
-      if (sMeridiem === 'pm') {
-        nHour = nTemp + 12;
+      if (state.values.clock.meridiem === 'pm') {
+        state.values.clock.hour = nTemp + 12;
       } else {
-        nHour = nTemp;
+        state.values.clock.hour = nTemp;
       }
     }
   }
@@ -890,17 +910,17 @@ widgetDateTimeZone = (function() {
 
   function changeTimeControls(nHr, nMn, nSs, nMs, sM) {
     if (isValidTime(nHr, nMn, nSs, nMs)) {
-      dTime = new Date(1970, 1, 1, nHr, nMn, nSs, nMs);
+      state.default.date = new Date(1970, 1, 1, nHr, nMn, nSs, nMs);
     } else {
-      dTime = new Date();
+      state.default.date = new Date();
     }
-    setTimeNumbers(dTime);
-    changeHour(nHour);
-    changeMinute(nMinute);
-    changeSecond(nSecond);
-    changeMillisecond(nMillisecond);
+    setTimeNumbers(state.default.date);
+    changeHour(state.values.clock.hour);
+    changeMinute(state.values.clock.minute);
+    changeSecond(state.values.clock.second);
+    changeMillisecond(state.values.clock.millisecond);
 
-    writeControlPanelShortTime(defaultShortTimeString(dTime))
+    writeControlPanelShortTime(defaultShortTimeString(state.default.date))
   }
 
   function fixMinutesOrSecondsInput(sType) {
@@ -909,11 +929,11 @@ widgetDateTimeZone = (function() {
     var nValue;
     if (sType === 'minutes') {
       nTemp = Number(eInputMinute.value);
-      nValue = nMinute;
+      nValue = state.values.clock.minute;
     }
     if (sType === 'seconds') {
       nTemp = Number(eInputSecond.value);
-      nValue = nSecond;
+      nValue = state.values.clock.second;
     }
     
     if (nTemp > 59) {
@@ -930,11 +950,11 @@ widgetDateTimeZone = (function() {
     if (bNeedsFix === true) {
       if (sType === 'minutes') {
         eInputMinute.value = nTemp;
-        nMinute = nTemp;
+        state.values.clock.minute = nTemp;
       }
       if (sType === 'seconds') {
         eInputSecond.value = nTemp;
-        nSecond = nTemp;
+        state.values.clock.second = nTemp;
       }
     }
   }
@@ -951,12 +971,12 @@ widgetDateTimeZone = (function() {
       nTemp = 0;
       bNeedsFix = true;
     }
-    if (nTemp.toString() !== nMillisecond.toString()) {
+    if (nTemp.toString() !== state.values.clock.millisecond.toString()) {
       bNeedsFix = true;
     }
     if (bNeedsFix === true) {
       eInputMillisecond.value = nTemp;
-      nMillisecond = nTemp;
+      state.values.clock.millisecond = nTemp;
     }    
   }
 
@@ -964,41 +984,41 @@ widgetDateTimeZone = (function() {
     eInputHour.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputHour, nHour, 'hour') === false) {
+        if (isDifferentTime(eInputHour, state.values.clock.hour, 'hour') === false) {
           return;
         }
         fixHoursInput();
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
     eInputMinute.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputMinute, nMinute, '') === false) {
+        if (isDifferentTime(eInputMinute, state.values.clock.minute, '') === false) {
           return;
         }
         fixMinutesOrSecondsInput('minutes');
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
     eInputSecond.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputSecond, nSecond, '') === false) {
+        if (isDifferentTime(eInputSecond, state.values.clock.second, '') === false) {
           return;
         }
         fixMinutesOrSecondsInput('seconds');
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
     eInputMillisecond.addEventListener('keydown', function(e) {
       var keyPress = returnKeyStroke(e);
       if (keyPress == 13) {
-        if (isDifferentTime(eInputMillisecond, nMillisecond, '') === false) {
+        if (isDifferentTime(eInputMillisecond, state.values.clock.millisecond, '') === false) {
           return;
         }
         fixMillisecondsInput();
-        changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+        changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
       }
     });
   }
@@ -1078,7 +1098,7 @@ widgetDateTimeZone = (function() {
   function isDifferentTime(eT, nT, sSpecial) {
     var nTemp = Number(eT.value);
     if (sSpecial === 'hour') {
-      if (sMeridiem === 'pm') {
+      if (state.values.clock.meridiem === 'pm') {
         nTemp += 12;
       }
     }
@@ -1090,109 +1110,109 @@ widgetDateTimeZone = (function() {
   }
 
   function directBlurHours(e) {
-    if (isDifferentTime(eInputHour, nHour, 'hour') === false) {
+    if (isDifferentTime(eInputHour, state.values.clock.hour, 'hour') === false) {
       return;
     }
     fixHoursInput();
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function directBlurMinutes(e) {
-    if (isDifferentTime(eInputMinute, nMinute, '') === false) {
+    if (isDifferentTime(eInputMinute, state.values.clock.minute, '') === false) {
       return;
     }
     fixMinutesOrSecondsInput('minutes');
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function directBlurSeconds(e) {
-    if (isDifferentTime(eInputSecond, nSecond, '') === false) {
+    if (isDifferentTime(eInputSecond, state.values.clock.second, '') === false) {
       return;
     }
     fixMinutesOrSecondsInput('seconds');
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function directBlurMilliseconds(e) {
-    if (isDifferentTime(eInputMillisecond, nMillisecond, '') === false) {
+    if (isDifferentTime(eInputMillisecond, state.values.clock.millisecond, '') === false) {
       return;
     }
     fixMillisecondsInput();
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function handleHMSM(event, sField, sCommand) {
     if (sField === 'hr') {
       if (sCommand === '<') {
-        nHour -= 1;
-        if (nHour < 0) {
-          nHour = 23;
+        state.values.clock.hour -= 1;
+        if (state.values.clock.hour < 0) {
+          state.values.clock.hour = 23;
         }
       }
       if (sCommand === '>') {
-        nHour += 1;
-        if (nHour > 23) {
-          nHour = 0;
+        state.values.clock.hour += 1;
+        if (state.values.clock.hour > 23) {
+          state.values.clock.hour = 0;
         }
       }
     }
     if (sField === 'mn') {
       if (sCommand === '<') {
-        nMinute -= 1;
-        if (nMinute < 0) {
-          nMinute = 59;
+        state.values.clock.minute -= 1;
+        if (state.values.clock.minute < 0) {
+          state.values.clock.minute = 59;
         }
       }
       if (sCommand === '>') {
-        nMinute += 1;
-        if (nMinute > 59) {
-          nMinute = 0;
+        state.values.clock.minute += 1;
+        if (state.values.clock.minute > 59) {
+          state.values.clock.minute = 0;
         }
       }
     }
     if (sField === 'ss') {
       if (sCommand === '<') {
-        nSecond -= 1;
-        if (nSecond < 0) {
-          nSecond = 59;
+        state.values.clock.second -= 1;
+        if (state.values.clock.second < 0) {
+          state.values.clock.second = 59;
         }
       }
       if (sCommand === '>') {
-        nSecond += 1;
-        if (nSecond > 59) {
-          nSecond = 0;
+        state.values.clock.second += 1;
+        if (state.values.clock.second > 59) {
+          state.values.clock.second = 0;
         }
       }
     }
     if (sField === 'ms') {
       if (sCommand === '<') {
-        nMillisecond -= 1;
-        if (nMillisecond < 0) {
-          nMillisecond = 999;
+        state.values.clock.millisecond -= 1;
+        if (state.values.clock.millisecond < 0) {
+          state.values.clock.millisecond = 999;
         }
       }
       if (sCommand === '>') {
-        nMillisecond += 1;
-        if (nMillisecond > 999) {
-          nMillisecond = 0;
+        state.values.clock.millisecond += 1;
+        if (state.values.clock.millisecond > 999) {
+          state.values.clock.millisecond = 0;
         }
       }
     }
     if (sField === 'ampm') {
-      if (sMeridiem === sCommand) {
+      if (state.values.clock.meridiem === sCommand) {
         return; // already set
       }
       if (sCommand === 'am') {
-        sMeridiem = 'am';
-        nHour -= 12;
+        state.values.clock.meridiem = 'am';
+        state.values.clock.hour -= 12;
       }
       if (sCommand === 'pm') {
-        sMeridiem = 'pm';
-        nHour += 12;
+        state.values.clock.meridiem = 'pm';
+        state.values.clock.hour += 12;
       }
     }
 
-    changeTimeControls(nHour, nMinute, nSecond, nMillisecond, sMeridiem);
+    changeTimeControls(state.values.clock.hour, state.values.clock.minute, state.values.clock.second, state.values.clock.millisecond, state.values.clock.meridiem);
   }
 
   function handleHours(event, sCommand) {
@@ -1220,11 +1240,11 @@ widgetDateTimeZone = (function() {
       return
     }
     if (o.show.seconds === true) {
-      bShowSeconds = true;
+      state.settings.clock.show.seconds = true;
       eRowSeconds.classList.add('active');
       eHandSecond.classList.add('active');
       if (o.show.milliseconds === true) {
-        bShowMilliseconds = true;
+        state.settings.clock.show.milliseconds = true;
         eRowMilliseconds.classList.add('active');
         eHandMillisecond.classList.add('active');
       }
@@ -1280,7 +1300,7 @@ widgetDateTimeZone = (function() {
 
   function outputPointyEnd(sFromWhere) {
     console.log('From Where:', sFromWhere);
-    console.log('selected', oSelected);
+    console.log('selected', state);
   }
 
   function filterListOff(eList, eSearch, eIcon) {
@@ -1422,7 +1442,7 @@ widgetDateTimeZone = (function() {
         aButtonClasses.push('bbrr');
       }
 
-      if (oGuessedLocation.area.toLowerCase() === sLIlc) {
+      if (state.default.timezone.area.toLowerCase() === sLIlc) {
         aButtonClasses.push('active');
       }
 
@@ -1466,9 +1486,9 @@ widgetDateTimeZone = (function() {
     var oNow = moment();
     var res = [];
 
-    if (oGuessedLocation.isGuessed === true && bForceAll === false) {
+    if (state.default.timezone.isGuessed === true && bForceAll === false) {
       res = aP.filter(function(x) {
-        if (x.sZoneParent === oSelected.area) {
+        if (x.sZoneParent === state.values.timezone.area) {
           return x;
         }
       });
@@ -1520,7 +1540,7 @@ widgetDateTimeZone = (function() {
       }
 
       if (
-        oSelected.location.toLowerCase() === res[i].sZoneChild.toLowerCase()
+        state.values.timezone.location.toLowerCase() === res[i].sZoneChild.toLowerCase()
       ) {
         aButtonClasses.push('active');
       }
@@ -1562,7 +1582,7 @@ widgetDateTimeZone = (function() {
   }
 
   function unpackTimeZones() {
-    aTimeZoneAreas = aTimeZones
+    return moment.tz.names()
       .map(function(s) {
         if (s.indexOf('/') > -1) {
           var sZoneParent = s.substr(0, s.indexOf('/'));
@@ -1610,53 +1630,47 @@ widgetDateTimeZone = (function() {
   }
 
   function getAsyncTZs() {
-    unpackTimeZones();
 
     var other = '';
-    var sGuess = moment.tz.guess();
 
-    oSelected.area = SELECTED_AREA;
-    oSelected.location = SELECTED_LOCATION;
+    state.values.timezone.area = SELECTED_AREA;
+    state.values.timezone.location = SELECTED_LOCATION;
 
-    if (typeof sGuess != 'undefined') {
-      oGuessedLocation = {
-        moment: sGuess,
-        area: returnZoneParent(sGuess),
-        location: returnZoneChild(sGuess).raw,
-        isGuessed: true
-      };
+    if (typeof state.default.timezone.guess != 'undefined') {
+        state.default.timezone.moment = state.default.timezone.guess;
+        state.default.timezone.area = returnZoneParent(state.default.timezone.guess);
+        state.default.timezone.location = returnZoneChild(state.default.timezone.guess).raw;
+        state.default.timezone.isGuessed = true;
 
-      setLabelArea(oGuessedLocation.area);
-      setLabelLocation(oGuessedLocation.location);
-      oSelected.moment = sGuess;
+      setLabelArea(state.default.timezone.area);
+      setLabelLocation(state.default.timezone.location);
+      state.values.timezone.moment = state.default.timezone.guess;
     } else {
-      oGuessedLocation = {
-        moment: sGuess,
-        area: oSelected.area,
-        location: oSelected.location,
-        isGuessed: false
-      };
+        state.default.timezone.moment = state.default.timezone.guess;
+        state.default.timezone.area = state.values.timezone.area;
+        state.default.timezone.location = state.values.timezone.location;
+        state.default.timezone.isGuessed = false;
 
-      setLabelArea(oSelected.area);
-      setLabelLocation(oSelected.location);
+      setLabelArea(state.values.timezone.area);
+      setLabelLocation(state.values.timezone.location);
     }
 
     var oZoneChildTemp;
     var sTimeZoneTemp;
-    for (var i in aTimeZones) {
+    for (var i in moment.tz.names()) {
       oZoneChildTemp = null;
-      oZoneChildTemp = returnZoneChild(aTimeZones[i]);
+      oZoneChildTemp = returnZoneChild(moment.tz.names()[i]);
 
       if (oZoneChildTemp.hasID === true) {
-        sTimeZoneTemp = moment.tz(aTimeZones[i]).format('Z');
+        sTimeZoneTemp = moment.tz(moment.tz.names()[i]).format('Z');
         offsetTmz.push({
-          sZoneParent: returnZoneParent(aTimeZones[i]),
+          sZoneParent: returnZoneParent(moment.tz.names()[i]),
           sZoneChild: oZoneChildTemp.raw,
           sZoneChildUI: oZoneChildTemp.formatted,
           bHasID: oZoneChildTemp.hasID,
-          timeZoneId: aTimeZones[i],
+          timeZoneId: moment.tz.names()[i],
           timeZone: sTimeZoneTemp,
-          timeZoneAbbreviation: moment.tz(aTimeZones[i]).format('z'),
+          timeZoneAbbreviation: moment.tz(moment.tz.names()[i]).format('z'),
           timeZoneLabel: 'GMT' + sTimeZoneTemp.toString(),
           locationSearchString:
             oZoneChildTemp.formatted + 'GMT' + sTimeZoneTemp.toString()
@@ -1666,7 +1680,7 @@ widgetDateTimeZone = (function() {
 
     async.waterfall([
       waterfallEmpty,
-      createListAreas(aTimeZoneAreas),
+      createListAreas(state.settings.timezone.listOfAreas),
       createListLocations(offsetTmz, false),
       addListeners(),
       listenerClickLocations(eButtonsLocations)
@@ -1694,9 +1708,9 @@ widgetDateTimeZone = (function() {
     setDefaultsForButtons();
     removeListenerClickLocations(eButtonsLocations);
 
-    oSelected.area = btnAttribute;
-    oSelected.location = SELECTED_LOCATION;
-    oSelected.moment = '';
+    state.values.timezone.area = btnAttribute;
+    state.values.timezone.location = SELECTED_LOCATION;
+    state.values.timezone.moment = '';
 
     if (btnAttribute !== 'All Locations') {
       createListLocations(offsetTmz, false);
@@ -1736,7 +1750,7 @@ widgetDateTimeZone = (function() {
   }
 
   function setMomentInTime(sId) {
-    oSelected.moment = sId;
+    state.values.timezone.moment = sId;
   }
 
   function onClickButtonLocation(event) {
@@ -1744,8 +1758,8 @@ widgetDateTimeZone = (function() {
     var attributeLocation = this.getAttribute('data-location');
     var attributeLocationUI = this.getAttribute('data-location-ui');
     var attributeIdentifier = this.getAttribute('data-tzid');
-    var sLastArea = oSelected.area.toLowerCase();
-    var sLastLocation = oSelected.location.toLowerCase();
+    var sLastArea = state.values.timezone.area.toLowerCase();
+    var sLastLocation = state.values.timezone.location.toLowerCase();
 
     setDefaultsForButtons();
 
@@ -1774,9 +1788,9 @@ widgetDateTimeZone = (function() {
 
       setLabelArea(SELECTED_AREA);
       setLabelLocation(SELECTED_LOCATION);
-      oSelected.moment = '';
+      state.values.timezone.moment = '';
     } else if (attributeArea === 'All Locations') {
-      oSelected.moment = '';
+      state.values.timezone.moment = '';
 
       if (sLastLocation !== 'choose location...') {
         async.waterfall([
@@ -1959,12 +1973,12 @@ widgetDateTimeZone = (function() {
 
   function setLabelArea(sArea) {
     eTimezoneAreaLabel.textContent = sArea;
-    oSelected.area = sArea;
+    state.values.timezone.area = sArea;
   }
 
   function setLabelLocation(sLocation) {
     eTimezoneLocationLabel.textContent = sLocation;
-    oSelected.location = sLocation;
+    state.values.timezone.location = sLocation;
   }
 
   function addListeners() {
@@ -1986,34 +2000,34 @@ widgetDateTimeZone = (function() {
     // Configuration -> Clock
     controlVisibilityOfHands(oConfig);
     // Control Panel
-    writeControlPanelShortDate(getShortDateString(dToday));
-    writeControlPanelShortTime(defaultShortTimeString(dTime));
+    writeControlPanelShortDate(getShortDateString(state.default.date));
+    writeControlPanelShortTime(defaultShortTimeString(state.default.date));
     writeControlPanelTimezone(defaultTimezone());
     addControlPanelEventListeners();
     // Calendar
     bindAllowedKeysYear();
     bindAllowedKeysMonth();
     listenForEnterOnCalendarInputs();
-    setDateNumbers(dToday);
-    changeMonth(nMonth);
-    changeYear(nYear);
-    changeDay(nDayOfMonth, nDayOfWeek);
+    setDateNumbers(state.default.date);
+    changeMonth(state.values.calendar.month);
+    changeYear(state.values.calendar.year);
+    changeDay(state.values.calendar.dayOfMonth, state.values.calendar.dayOfWeek);
     writeCalendarLabels();
-    writeDays(nYear, nMonth);
+    writeDays(state.values.calendar.year, state.values.calendar.month);
     // Clock
     bindAllowedKeysHour();
     bindAllowedKeysMinute();
     bindAllowedKeysSecond();
     bindAllowedKeysMillisecond();
     listenForEnterOnTimeInputs();
-    setTimeNumbers(dTime);
-    changeHour(nHour);
-    changeMinute(nMinute);
-    changeSecond(nSecond);
-    changeMillisecond(nMillisecond);
+    setTimeNumbers(state.default.date);
+    changeHour(state.values.clock.hour);
+    changeMinute(state.values.clock.minute);
+    changeSecond(state.values.clock.second);
+    changeMillisecond(state.values.clock.millisecond);
     // Timezone
-    setLabelArea(oSelected.area);
-    setLabelLocation(oSelected.location);
+    setLabelArea(state.values.timezone.area);
+    setLabelLocation(state.values.timezone.location);
     getAsyncTZs();
   }
 
@@ -2043,8 +2057,8 @@ widgetDateTimeZone = (function() {
 
 var oConfigWidget = {
   show: {
-    seconds: true,
-    milliseconds: true
+    seconds: false,
+    milliseconds: false
   }
 }
 widgetDateTimeZone.init(oConfigWidget);

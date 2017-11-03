@@ -16,7 +16,13 @@ widgetDateTime = (function() {
   var eControlPanelDestroy;
   var eControlPanelKeepEditing;
   var eControlPanelDiscard;
-  var sTimezoneGuess = moment.tz.guess();
+
+  var state = {
+    default: {
+      date: new Date(),
+      guessTimeZone: moment.tz.guess()
+    }
+  };
 
   function getElement(sElementName) {
     var ele = window.document.getElementById(sElementName);
@@ -90,14 +96,13 @@ widgetDateTime = (function() {
 
   function defaultShortDateString() {
     var language = [window.navigator.userLanguage || window.navigator.language];
-    var date = new Date(),
-      options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      };
-    return date.toLocaleDateString(language, options);
+    var options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    };
+    return state.default.date.toLocaleDateString(language, options);
   }
 
   function writeShortDate(s) {
@@ -106,7 +111,7 @@ widgetDateTime = (function() {
   }
 
   function defaultShortTimeString() {
-    var date = new Date();
+    var date = state.default.date;
     // getHours returns the hours in local time zone from 0 to 23
     var hours = date.getHours();
     // getMinutes returns the minutes in local time zone from 0 to 59
@@ -136,7 +141,7 @@ widgetDateTime = (function() {
   }
 
   function defaultTimezone() {
-    var s = sTimezoneGuess;
+    var s = state.default.guessTimeZone;
 
     return s;
   }
