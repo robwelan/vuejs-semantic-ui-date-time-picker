@@ -988,6 +988,7 @@ div.snuggle-date-time .ctl-listitem-location {
   border-color: #a2a0a0;
 }
 
+.tz-detail,
 div.snuggle-date-time .ctl-tz {
   color: #464646;
 }
@@ -1012,11 +1013,6 @@ div.snuggle-date-time .ctl-listitem-location:active span,
 div.snuggle-date-time .ctl-listitem-location.active span {
   background: #464646;
   color: #fff;
-}
-
-.tz-detail,
-div.snuggle-date-time .ctl-tz {
-  color: #464646;
 }
 
 div.snuggle-date-time .ctl-tz .label {
