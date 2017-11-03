@@ -263,16 +263,12 @@ widgetDateTimeZone = (function() {
     var sM = '';
     var sS = '';
     var sMi = '';
-    var meridiem = ' AM';
+    var meridiem = '';
     var s = '';
 
     // convert to 12-hour time format
-    if (hours > 12) {
-      hours = hours - 12;
-      meridiem = ' PM';
-    } else if (hours === 0) {
-      hours = 12;
-    }
+    meridiem = (hours >= 12)? ' PM' : ' AM';
+    hours = ((hours + 11) % 12 + 1);
 
     sH = hours.toString();
 
@@ -352,7 +348,6 @@ widgetDateTimeZone = (function() {
   }
 
   function writeControlPanelShortDate(s) {
-    // console.log(date.toLocaleDateString(language, options));
     eControlPanelShowDateLabel.textContent = s;
   }
 
@@ -1738,7 +1733,6 @@ widgetDateTimeZone = (function() {
         animateLocationIn();
       }, 1000)
     ]);
-
     outputPointyEnd(onClickButtonArea.name);
   }
 
@@ -1853,6 +1847,7 @@ widgetDateTimeZone = (function() {
       setMomentInTime(attributeIdentifier);
     }
 
+    writeControlPanelTimezone(state.values.timezone.moment);
     outputPointyEnd(onClickButtonLocation.name);
   }
 
