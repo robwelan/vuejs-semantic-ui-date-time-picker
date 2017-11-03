@@ -531,6 +531,7 @@ widgetDateTimeZone = (function() {
       eTarget.classList.add('active');
 
       var dSelected = new Date(state.values.calendar.year, state.values.calendar.month, state.values.calendar.dayOfMonth);
+      state.values.calendar.date = dSelected;
       writeControlPanelShortDate(getShortDateString(dSelected));
 //      closeUICalendar();
     }
@@ -905,17 +906,17 @@ widgetDateTimeZone = (function() {
 
   function changeTimeControls(nHr, nMn, nSs, nMs, sM) {
     if (isValidTime(nHr, nMn, nSs, nMs)) {
-      state.default.date = new Date(1970, 1, 1, nHr, nMn, nSs, nMs);
+      state.values.clock.time = new Date(1970, 1, 1, nHr, nMn, nSs, nMs);
     } else {
-      state.default.date = new Date();
+      state.values.clock.time = new Date();
     }
-    setTimeNumbers(state.default.date);
+    setTimeNumbers(state.values.clock.time);
     changeHour(state.values.clock.hour);
     changeMinute(state.values.clock.minute);
     changeSecond(state.values.clock.second);
     changeMillisecond(state.values.clock.millisecond);
 
-    writeControlPanelShortTime(defaultShortTimeString(state.default.date))
+    writeControlPanelShortTime(defaultShortTimeString(state.values.clock.time))
   }
 
   function fixMinutesOrSecondsInput(sType) {
